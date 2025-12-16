@@ -154,33 +154,34 @@ async function downloadPDF() {
         const pageSize = pageSizeSelect.value;
         const orientation = orientationSelect.value;
 
-        // Create a temporary overlay to ensure content is "visible" for html2canvas
-        // This fixes the blank PDF issue caused by off-screen rendering
+        // Create a temporary overlay to ensure content is available for html2canvas
+        // We use opacity 0 to hide it from the user, but restore it in the onclone callback for capture
         overlay = document.createElement('div');
+        overlay.id = 'pdf-overlay-root';
         overlay.style.position = 'fixed';
         overlay.style.top = '0';
         overlay.style.left = '0';
         overlay.style.width = '100%';
         overlay.style.height = '100%';
         overlay.style.backgroundColor = '#ffffff';
-        overlay.style.zIndex = '99999';
-        overlay.style.overflow = 'auto'; // Allow scrolling so all content renders
+        overlay.style.zIndex = '-9999'; // Behind everything
+        overlay.style.opacity = '0';    // Invisible to user
+        overlay.style.overflow = 'hidden';
         document.body.appendChild(overlay);
 
         // Clone the live preview content
         tempContainer = previewContent.cloneNode(true);
         tempContainer.classList.add('pdf-content');
 
-        // Reset styles
-        tempContainer.style.height = 'auto';
-        tempContainer.style.overflow = 'visible';
-        tempContainer.style.maxHeight = 'none';
-        tempContainer.style.margin = '0 auto';
-
-        // Match width to PDF format to ensure WYSIWYG
+        // Match width to PDF format
         const pdfWidth = orientation === 'landscape' ? '297mm' : '210mm';
+
+        // Reset styles for the container
         tempContainer.style.width = pdfWidth;
         tempContainer.style.maxWidth = 'none';
+        tempContainer.style.height = 'auto';
+        tempContainer.style.overflow = 'visible';
+        tempContainer.style.margin = '0 auto';
 
         // Add print-specific styles
         const style = document.createElement('style');
@@ -228,12 +229,8 @@ async function downloadPDF() {
         overlay.appendChild(style);
         overlay.appendChild(tempContainer);
 
-        // Scroll to bottom and top to trigger lazy loads if any (though we don't use them, it wakes up the renderer)
-        overlay.scrollTop = overlay.scrollHeight;
-        overlay.scrollTop = 0;
-
-        // Small delay to ensure styling is applied and rendering is complete
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Small delay to ensure DOM insertion
+        await new Promise(resolve => setTimeout(resolve, 100));
 
         // Simplified configuration
         const opt = {
@@ -244,9 +241,17 @@ async function downloadPDF() {
                 scale: 2,
                 useCORS: true,
                 logging: false,
-                scrollY: 0, // Critical: force capture from top
-                windowWidth: document.documentElement.offsetWidth, // Ensure full width matching
-                windowHeight: document.documentElement.offsetHeight
+                scrollY: 0,
+                windowWidth: document.documentElement.offsetWidth,
+                windowHeight: document.documentElement.offsetHeight,
+                // Critical: Make the overlay visible in the clone that html2canvas uses
+                onclone: (clonedDoc) => {
+                    const clonedOverlay = clonedDoc.getElementById('pdf-overlay-root');
+                    if (clonedOverlay) {
+                        clonedOverlay.style.opacity = '1';
+                        clonedOverlay.style.zIndex = '99999'; // Ensure it's on top in the clone
+                    }
+                }
             },
             jsPDF: {
                 unit: 'mm',
