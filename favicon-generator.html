@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favicon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #667EEA;
+        }
+
+        canvas {
+            border: 2px solid #ddd;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .preview {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .preview-item {
+            text-align: center;
+        }
+
+        .preview-item img {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎨 MarkdownPDF Favicon Generator</h1>
+        <p>Generate favicon files for your website</p>
+
+        <div class="preview">
+            <div class="preview-item">
+                <h3>16x16 (favicon.ico)</h3>
+                <canvas id="canvas16" width="16" height="16"></canvas>
+                <br>
+                <button onclick="downloadFavicon(16)">Download 16x16</button>
+            </div>
+
+            <div class="preview-item">
+                <h3>32x32 (favicon.ico)</h3>
+                <canvas id="canvas32" width="32" height="32"></canvas>
+                <br>
+                <button onclick="downloadFavicon(32)">Download 32x32</button>
+            </div>
+
+            <div class="preview-item">
+                <h3>180x180 (Apple Touch)</h3>
+                <canvas id="canvas180" width="180" height="180"></canvas>
+                <br>
+                <button onclick="downloadFavicon(180)">Download 180x180</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Click the download buttons above to save each size</li>
+            <li>Rename the 32x32 file to <code>favicon.ico</code></li>
+            <li>Rename the 180x180 file to <code>apple-touch-icon.png</code></li>
+            <li>Place all files in your project root directory</li>
+        </ol>
+
+        <p><strong>Note:</strong> The favicon.svg file is already created and ready to use!</p>
+    </div>
+
+    <script>
+        function drawFavicon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 32;
+
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667EEA');
+            gradient.addColorStop(1, '#764BA2');
+
+            // Draw rounded rectangle background
+            const radius = size * 0.1875; // 6px at 32px size
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+
+            // Draw M with arrow shape
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.beginPath();
+            ctx.moveTo(8 * scale, 11 * scale);
+            ctx.lineTo(11 * scale, 11 * scale);
+            ctx.lineTo(16 * scale, 18 * scale);
+            ctx.lineTo(21 * scale, 11 * scale);
+            ctx.lineTo(24 * scale, 11 * scale);
+            ctx.lineTo(24 * scale, 14 * scale);
+            ctx.lineTo(16 * scale, 24 * scale);
+            ctx.lineTo(8 * scale, 14 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw arrow accent
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 1.5 * scale;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(14 * scale, 19 * scale);
+            ctx.lineTo(16 * scale, 21 * scale);
+            ctx.lineTo(18 * scale, 19 * scale);
+            ctx.stroke();
+        }
+
+        function downloadFavicon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `favicon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Draw all sizes on load
+        window.onload = function () {
+            drawFavicon(document.getElementById('canvas16'), 16);
+            drawFavicon(document.getElementById('canvas32'), 32);
+            drawFavicon(document.getElementById('canvas180'), 180);
+        };
+    </script>
+</body>
+
+</html>

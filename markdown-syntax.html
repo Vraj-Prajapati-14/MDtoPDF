@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Complete Markdown Syntax Reference - Best Free Fast Accurate MD to PDF Guide | MarkdownPDF</title>
+    <meta name="description"
+        content="Complete Markdown syntax reference with examples for the best free fast accurate markdown to PDF converter. Learn all Markdown formatting including headings, lists, code blocks, tables, links, and more for converting MD to PDF.">
+    <meta name="keywords"
+        content="markdown syntax, markdown reference, markdown cheat sheet, markdown guide, markdown formatting, best markdown syntax, fast markdown reference, accurate markdown cheat sheet, online markdown guide, developer markdown syntax, md to pdf syntax, free markdown reference, best md converter syntax, fast accurate markdown guide, online pdf syntax, markdown pdf cheat sheet, dev tool syntax, free online syntax, best free reference, fast online guide, accurate markdown syntax, developer syntax, markdown to pdf reference, md to pdf converter syntax, best fast syntax, accurate online reference, free developer syntax, markdown pdf syntax, online best syntax, fast accurate reference, best online reference, accurate free syntax, developer reference, markdown tool syntax, md to pdf best syntax, free best syntax, fast markdown reference, accurate pdf syntax, online markdown syntax, best dev syntax, markdown pdf reference syntax, md to pdf online syntax, free fast reference, best accurate syntax, online free syntax, developer markdown reference, markdown to pdf best syntax, md to pdf fast reference, accurate online syntax, free developer reference, markdown pdf tool syntax, md to pdf converter reference, best fast accurate syntax, fast online reference, accurate free reference, online developer reference, best free reference, fast markdown converter syntax, accurate markdown converter syntax, online best reference, markdown converter syntax, md to pdf tool reference, best fast reference, fast accurate reference, accurate best reference, online best syntax, markdown pdf best syntax, md to pdf online reference, free best fast syntax, best online syntax, fast markdown tool reference, accurate markdown tool reference, online free best syntax, developer tool reference, markdown to pdf converter syntax, md to pdf fast tool reference, accurate online converter reference, free developer tool reference, markdown pdf converter syntax, md to pdf converter tool reference, best fast accurate reference, fast online converter reference, accurate free converter reference, online developer converter reference, best free converter reference, fast markdown converter tool reference, accurate markdown converter tool reference, online best converter reference, markdown converter tool reference, md to pdf tool converter reference, best fast tool reference, fast accurate tool reference, accurate best tool reference, online best tool reference, markdown pdf tool converter reference, md to pdf online tool converter reference, free best fast tool reference, best online tool reference, fast markdown tool converter reference, accurate markdown tool converter reference, online free tool converter reference, developer tool converter reference, markdown to pdf tool converter reference, md to pdf fast tool converter reference, accurate online tool converter reference, free developer tool converter reference, markdown pdf tool converter reference, md to pdf converter tool converter reference">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="author" content="MarkdownPDF">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    <meta name="distribution" content="global">
+    <meta name="theme-color" content="#667EEA">
+
+    <link rel="canonical" href="https://www.markdownpdf.com/markdown-syntax.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.markdownpdf.com/markdown-syntax.html">
+    <meta property="og:title" content="Complete Markdown Syntax Reference - Best Free Fast Accurate MD to PDF Guide">
+    <meta property="og:description" content="Complete Markdown syntax reference with examples for the best free fast accurate markdown to PDF converter.">
+    <meta property="og:image" content="https://www.markdownpdf.com/og-image.jpg">
+    <meta property="og:site_name" content="MarkdownPDF">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.markdownpdf.com/markdown-syntax.html">
+    <meta name="twitter:title" content="Complete Markdown Syntax Reference - Best Free Fast Accurate MD to PDF Guide">
+    <meta name="twitter:description" content="Complete Markdown syntax reference with examples for the best free fast accurate markdown to PDF converter.">
+    <meta name="twitter:image" content="https://www.markdownpdf.com/twitter-image.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .syntax-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+
+        .syntax-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+
+        .syntax-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .syntax-example {
+            background: var(--bg-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .syntax-example h4 {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .syntax-example pre {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .syntax-result {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .syntax-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)" />
+                    <path d="M8 12L16 20L24 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#667EEA" />
+                            <stop offset="1" stop-color="#764BA2" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">MarkdownPDF</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link">MD to PDF</a></li>
+                <li><a href="/guide.html" class="nav-link">Guide</a></li>
+                <li><a href="/features.html" class="nav-link">Features</a></li>
+                <li><a href="/blog.html" class="nav-link">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-title">Markdown <span class="gradient-text">Syntax Reference</span></h1>
+                <p class="hero-subtitle">Complete guide to Markdown formatting with examples</p>
+            </div>
+        </section>
+
+        <div class="syntax-content">
+            <article class="syntax-section">
+                <h2>Headings</h2>
+                <div class="syntax-grid">
+                    <div class="syntax-example">
+                        <h4>Markdown</h4>
+                        <pre># Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <h1 style="font-size: 2em; margin: 0.5em 0;">Heading 1</h1>
+                        <h2 style="font-size: 1.5em; margin: 0.5em 0;">Heading 2</h2>
+                        <h3 style="font-size: 1.25em; margin: 0.5em 0;">Heading 3</h3>
+                        <h4 style="margin: 0.5em 0;">Heading 4</h4>
+                        <h5 style="font-size: 0.9em; margin: 0.5em 0;">Heading 5</h5>
+                        <h6 style="font-size: 0.8em; margin: 0.5em 0;">Heading 6</h6>
+                    </div>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Text Formatting</h2>
+                <div class="syntax-grid">
+                    <div class="syntax-example">
+                        <h4>Markdown</h4>
+                        <pre>**Bold text**
+*Italic text*
+***Bold and italic***
+~~Strikethrough~~
+`Inline code`</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <p><strong>Bold text</strong></p>
+                        <p><em>Italic text</em></p>
+                        <p><strong><em>Bold and italic</em></strong></p>
+                        <p><del>Strikethrough</del></p>
+                        <p><code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px;">Inline code</code>
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Lists</h2>
+                <div class="syntax-grid">
+                    <div class="syntax-example">
+                        <h4>Unordered List</h4>
+                        <pre>- Item 1
+- Item 2
+  - Nested item
+  - Another nested
+- Item 3</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <ul>
+                            <li>Item 1</li>
+                            <li>Item 2
+                                <ul>
+                                    <li>Nested item</li>
+                                    <li>Another nested</li>
+                                </ul>
+                            </li>
+                            <li>Item 3</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="syntax-grid" style="margin-top: var(--spacing-md);">
+                    <div class="syntax-example">
+                        <h4>Ordered List</h4>
+                        <pre>1. First item
+2. Second item
+3. Third item
+   1. Nested item
+   2. Another nested</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <ol>
+                            <li>First item</li>
+                            <li>Second item</li>
+                            <li>Third item
+                                <ol>
+                                    <li>Nested item</li>
+                                    <li>Another nested</li>
+                                </ol>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Links and Images</h2>
+                <div class="syntax-grid">
+                    <div class="syntax-example">
+                        <h4>Markdown</h4>
+                        <pre>[Link text](https://example.com)
+[Link with title](https://example.com "Title")
+
+![Alt text](image.jpg)
+![Image with title](image.jpg "Title")</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <p><a href="https://example.com" style="color: #667EEA;">Link text</a></p>
+                        <p><a href="https://example.com" title="Title" style="color: #667EEA;">Link with title</a></p>
+                        <p><em>Images would display here</em></p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Code Blocks</h2>
+                <div class="syntax-example">
+                    <h4>Markdown</h4>
+                    <pre>```javascript
+function greet(name) {
+    console.log(`Hello, ${name}!`);
+}
+```</pre>
+                </div>
+                <div class="syntax-result" style="margin-top: var(--spacing-md);">
+                    <h4>Result</h4>
+                    <pre style="background: #f5f5f5; padding: 1em; border-radius: 4px; overflow-x: auto;"><code>function greet(name) {
+    console.log(`Hello, ${name}!`);
+}</code></pre>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Tables</h2>
+                <div class="syntax-example">
+                    <h4>Markdown</h4>
+                    <pre>| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |</pre>
+                </div>
+                <div class="syntax-result" style="margin-top: var(--spacing-md);">
+                    <h4>Result</h4>
+                    <table style="border-collapse: collapse; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f5f5f5;">Header 1</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f5f5f5;">Header 2</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f5f5f5;">Header 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Cell 1</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Cell 2</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Cell 3</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Cell 4</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Cell 5</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Cell 6</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Blockquotes</h2>
+                <div class="syntax-grid">
+                    <div class="syntax-example">
+                        <h4>Markdown</h4>
+                        <pre>> This is a blockquote
+> It can span multiple lines
+>
+> And have paragraphs</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <blockquote
+                            style="border-left: 4px solid #667EEA; padding-left: 1em; color: #666; font-style: italic;">
+                            This is a blockquote<br>
+                            It can span multiple lines<br><br>
+                            And have paragraphs
+                        </blockquote>
+                    </div>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Horizontal Rules</h2>
+                <div class="syntax-grid">
+                    <div class="syntax-example">
+                        <h4>Markdown</h4>
+                        <pre>---
+or
+***
+or
+___</pre>
+                    </div>
+                    <div class="syntax-result">
+                        <h4>Result</h4>
+                        <hr style="border: none; border-top: 1px solid #ddd; margin: 1em 0;">
+                    </div>
+                </div>
+            </article>
+
+            <article class="syntax-section">
+                <h2>Quick Reference</h2>
+                <table style="width: 100%; color: var(--text-secondary);">
+                    <thead>
+                        <tr style="background: var(--bg-primary);">
+                            <th style="padding: var(--spacing-sm); text-align: left; color: var(--text-primary);">
+                                Element</th>
+                            <th style="padding: var(--spacing-sm); text-align: left; color: var(--text-primary);">Syntax
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: var(--spacing-sm);">Heading</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);"># H1 ## H2 ### H3
+                            </td>
+                        </tr>
+                        <tr style="background: var(--bg-primary);">
+                            <td style="padding: var(--spacing-sm);">Bold</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">**bold text**</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--spacing-sm);">Italic</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">*italic text*</td>
+                        </tr>
+                        <tr style="background: var(--bg-primary);">
+                            <td style="padding: var(--spacing-sm);">Link</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">
+                                [title](https://url.com)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--spacing-sm);">Image</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">![alt](image.jpg)
+                            </td>
+                        </tr>
+                        <tr style="background: var(--bg-primary);">
+                            <td style="padding: var(--spacing-sm);">Code</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">`code`</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--spacing-sm);">Code Block</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">```language```</td>
+                        </tr>
+                        <tr style="background: var(--bg-primary);">
+                            <td style="padding: var(--spacing-sm);">Unordered List</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">- item</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--spacing-sm);">Ordered List</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">1. item</td>
+                        </tr>
+                        <tr style="background: var(--bg-primary);">
+                            <td style="padding: var(--spacing-sm);">Blockquote</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">> quote</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--spacing-sm);">Horizontal Rule</td>
+                            <td style="padding: var(--spacing-sm); font-family: var(--font-mono);">---</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="8" fill="url(#gradient2)" />
+                            <path d="M8 12L16 20L24 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#667EEA" />
+                                    <stop offset="1" stop-color="#764BA2" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>MarkdownPDF</span>
+                    </div>
+                    <p class="footer-description">The fastest and most secure way to convert Markdown to PDF online.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/features.html">Features</a></li>
+                        <li><a href="/guide.html">User Guide</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/markdown-syntax.html">Markdown Syntax</a></li>
+                        <li><a href="/examples.html">Examples</a></li>
+                        <li><a href="/api.html">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MarkdownPDF. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>API Documentation - Best Free Fast Accurate Markdown to PDF Developer Tool | MarkdownPDF</title>
+    <meta name="description"
+        content="MarkdownPDF API documentation for developers. Learn how to integrate the best free fast accurate Markdown to PDF conversion into your applications. Developer-friendly tool for MD to PDF conversion.">
+    <meta name="keywords"
+        content="markdown api, pdf api, markdown conversion api, developer documentation, integration guide, best markdown api, fast pdf api, accurate markdown conversion api, online developer api, developer markdown api, md to pdf api, free markdown api, best md converter api, fast accurate conversion api, online pdf api, markdown pdf api, dev tool api, free online api, best free api, fast online api, accurate markdown api, developer api, markdown to pdf api, md to pdf converter api, best fast api, accurate online api, free developer api, markdown pdf api, online best api, fast accurate documentation, best online documentation, accurate free api, developer documentation api, markdown tool api, md to pdf best api, free best api, fast markdown api, accurate pdf api, online markdown api, best dev api, markdown pdf documentation api, md to pdf online api, free fast documentation, best accurate api, online free api, developer markdown documentation, markdown to pdf best api, md to pdf fast documentation, accurate online documentation, free developer documentation, markdown pdf tool api, md to pdf converter documentation, best fast accurate api, fast online documentation, accurate free documentation, online developer documentation, best free documentation, fast markdown converter api, accurate markdown converter api, online best documentation, markdown converter api, md to pdf tool documentation, best fast documentation, fast accurate documentation, accurate best documentation, online best api, markdown pdf best api, md to pdf online documentation, free best fast api, best online api, fast markdown tool documentation, accurate markdown tool documentation, online free best api, developer tool documentation, markdown to pdf converter api, md to pdf fast tool documentation, accurate online converter documentation, free developer tool documentation, markdown pdf converter api, md to pdf converter tool documentation, best fast accurate documentation, fast online converter documentation, accurate free converter documentation, online developer converter documentation, best free converter documentation, fast markdown converter tool documentation, accurate markdown converter tool documentation, online best converter documentation, markdown converter tool documentation, md to pdf tool converter documentation, best fast tool documentation, fast accurate tool documentation, accurate best tool documentation, online best tool documentation, markdown pdf tool converter documentation, md to pdf online tool converter documentation, free best fast tool documentation, best online tool documentation, fast markdown tool converter documentation, accurate markdown tool converter documentation, online free tool converter documentation, developer tool converter documentation, markdown to pdf tool converter documentation, md to pdf fast tool converter documentation, accurate online tool converter documentation, free developer tool converter documentation, markdown pdf tool converter documentation, md to pdf converter tool converter documentation">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="author" content="MarkdownPDF">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    <meta name="distribution" content="global">
+    <meta name="theme-color" content="#667EEA">
+
+    <link rel="canonical" href="https://www.markdownpdf.com/api.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.markdownpdf.com/api.html">
+    <meta property="og:title" content="API Documentation - Best Free Fast Accurate Markdown to PDF Developer Tool">
+    <meta property="og:description" content="MarkdownPDF API documentation for developers. Learn how to integrate the best free fast accurate Markdown to PDF conversion.">
+    <meta property="og:image" content="https://www.markdownpdf.com/og-image.jpg">
+    <meta property="og:site_name" content="MarkdownPDF">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.markdownpdf.com/api.html">
+    <meta name="twitter:title" content="API Documentation - Best Free Fast Accurate Markdown to PDF Developer Tool">
+    <meta name="twitter:description" content="MarkdownPDF API documentation for developers. Learn how to integrate the best free fast accurate Markdown to PDF conversion.">
+    <meta name="twitter:image" content="https://www.markdownpdf.com/twitter-image.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .api-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+
+        .api-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--primary-color);
+            overflow-x: auto;
+            margin: var(--spacing-md) 0;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .endpoint {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            margin: var(--spacing-xs) 0;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: var(--spacing-xs);
+        }
+
+        .method-get {
+            background: #10b981;
+            color: white;
+        }
+
+        .method-post {
+            background: #3b82f6;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+        }
+
+        table th,
+        table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        table th {
+            color: var(--text-primary);
+            font-weight: 600;
+            background: var(--bg-primary);
+        }
+
+        .note-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin: var(--spacing-md) 0;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin: var(--spacing-md) 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)" />
+                    <path d="M8 12L16 20L24 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#667EEA" />
+                            <stop offset="1" stop-color="#764BA2" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">MarkdownPDF</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link">MD to PDF</a></li>
+                <li><a href="/guide.html" class="nav-link">Guide</a></li>
+                <li><a href="/features.html" class="nav-link">Features</a></li>
+                <li><a href="/blog.html" class="nav-link">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-title">API <span class="gradient-text">Documentation</span></h1>
+                <p class="hero-subtitle">Integrate Markdown to PDF conversion into your applications</p>
+            </div>
+        </section>
+
+        <div class="api-content">
+            <div class="note-box">
+                <h3 style="color: #3b82f6; margin: 0 0 var(--spacing-sm) 0;">📘 Client-Side Library</h3>
+                <p style="margin: 0; color: var(--text-primary);">MarkdownPDF operates entirely in the browser. Below is
+                    documentation for integrating the same functionality into your own applications using JavaScript.
+                </p>
+            </div>
+
+            <article class="api-section">
+                <h2>Getting Started</h2>
+                <p style="color: var(--text-secondary);">To integrate Markdown to PDF conversion in your application,
+                    you'll need two libraries:</p>
+
+                <h3>1. Include Required Libraries</h3>
+                <div class="code-block">
+                    <pre>&lt;!-- Markdown Parser --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- PDF Generator --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"&gt;&lt;/script&gt;</pre>
+                </div>
+
+                <h3>2. Basic Usage</h3>
+                <div class="code-block">
+                    <pre>// Convert Markdown to HTML
+const markdownText = '# Hello World\n\nThis is **bold** text.';
+const html = marked.parse(markdownText);
+
+// Convert HTML to PDF
+const element = document.createElement('div');
+element.innerHTML = html;
+
+html2pdf()
+    .set({
+        margin: 10,
+        filename: 'document.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    })
+    .from(element)
+    .save();</pre>
+                </div>
+            </article>
+
+            <article class="api-section">
+                <h2>Configuration Options</h2>
+
+                <h3>PDF Options</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Type</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>margin</code></td>
+                            <td>number | array</td>
+                            <td>10</td>
+                            <td>Page margins in mm</td>
+                        </tr>
+                        <tr>
+                            <td><code>filename</code></td>
+                            <td>string</td>
+                            <td>'document.pdf'</td>
+                            <td>Output filename</td>
+                        </tr>
+                        <tr>
+                            <td><code>image.type</code></td>
+                            <td>string</td>
+                            <td>'jpeg'</td>
+                            <td>Image type (jpeg/png)</td>
+                        </tr>
+                        <tr>
+                            <td><code>image.quality</code></td>
+                            <td>number</td>
+                            <td>0.98</td>
+                            <td>Image quality (0-1)</td>
+                        </tr>
+                        <tr>
+                            <td><code>html2canvas.scale</code></td>
+                            <td>number</td>
+                            <td>2</td>
+                            <td>Rendering scale</td>
+                        </tr>
+                        <tr>
+                            <td><code>jsPDF.unit</code></td>
+                            <td>string</td>
+                            <td>'mm'</td>
+                            <td>Unit (mm/in/pt)</td>
+                        </tr>
+                        <tr>
+                            <td><code>jsPDF.format</code></td>
+                            <td>string | array</td>
+                            <td>'a4'</td>
+                            <td>Page format</td>
+                        </tr>
+                        <tr>
+                            <td><code>jsPDF.orientation</code></td>
+                            <td>string</td>
+                            <td>'portrait'</td>
+                            <td>portrait/landscape</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Page Formats</h3>
+                <div class="code-block">
+                    <pre>// Standard formats
+'a4'      // 210 × 297 mm
+'letter'  // 8.5 × 11 inches
+'legal'   // 8.5 × 14 inches
+'a3'      // 297 × 420 mm
+
+// Custom size
+[width, height]  // in specified units</pre>
+                </div>
+            </article>
+
+            <article class="api-section">
+                <h2>Advanced Examples</h2>
+
+                <h3>Example 1: Custom Page Size</h3>
+                <div class="code-block">
+                    <pre>const options = {
+    margin: [15, 15, 15, 15],
+    filename: 'custom-document.pdf',
+    jsPDF: {
+        unit: 'mm',
+        format: [210, 297],  // Custom A4 size
+        orientation: 'portrait'
+    }
+};
+
+html2pdf().set(options).from(element).save();</pre>
+                </div>
+
+                <h3>Example 2: Landscape Orientation</h3>
+                <div class="code-block">
+                    <pre>const options = {
+    margin: 10,
+    filename: 'landscape-doc.pdf',
+    jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'landscape'
+    }
+};
+
+html2pdf().set(options).from(element).save();</pre>
+                </div>
+
+                <h3>Example 3: High Quality Output</h3>
+                <div class="code-block">
+                    <pre>const options = {
+    margin: 10,
+    filename: 'high-quality.pdf',
+    image: {
+        type: 'jpeg',
+        quality: 1.0
+    },
+    html2canvas: {
+        scale: 3,
+        useCORS: true,
+        letterRendering: true
+    },
+    jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+    }
+};
+
+html2pdf().set(options).from(element).save();</pre>
+                </div>
+
+                <h3>Example 4: Complete Integration</h3>
+                <div class="code-block">
+                    <pre>class MarkdownPDFConverter {
+    constructor(options = {}) {
+        this.defaultOptions = {
+            margin: 10,
+            filename: 'document.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        this.options = { ...this.defaultOptions, ...options };
+    }
+
+    async convert(markdownText) {
+        // Parse Markdown to HTML
+        const html = marked.parse(markdownText);
+        
+        // Create temporary container
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        container.style.padding = '20px';
+        container.style.fontFamily = 'Arial, sans-serif';
+        
+        // Generate PDF
+        return html2pdf()
+            .set(this.options)
+            .from(container)
+            .save();
+    }
+
+    setPageSize(format) {
+        this.options.jsPDF.format = format;
+        return this;
+    }
+
+    setOrientation(orientation) {
+        this.options.jsPDF.orientation = orientation;
+        return this;
+    }
+
+    setFilename(filename) {
+        this.options.filename = filename;
+        return this;
+    }
+}
+
+// Usage
+const converter = new MarkdownPDFConverter();
+converter
+    .setPageSize('a4')
+    .setOrientation('portrait')
+    .setFilename('my-document.pdf')
+    .convert('# Hello World\n\nThis is a test.');</pre>
+                </div>
+            </article>
+
+            <article class="api-section">
+                <h2>Markdown Configuration</h2>
+
+                <h3>Marked.js Options</h3>
+                <div class="code-block">
+                    <pre>marked.setOptions({
+    breaks: true,          // Convert \n to &lt;br&gt;
+    gfm: true,            // GitHub Flavored Markdown
+    headerIds: true,      // Add IDs to headings
+    mangle: false,        // Don't escape email addresses
+    sanitize: false       // Don't sanitize HTML
+});</pre>
+                </div>
+
+                <h3>Custom Renderer</h3>
+                <div class="code-block">
+                    <pre>const renderer = new marked.Renderer();
+
+// Custom heading renderer
+renderer.heading = function(text, level) {
+    return `&lt;h${level} style="color: #667EEA;"&gt;${text}&lt;/h${level}&gt;`;
+};
+
+// Custom code block renderer
+renderer.code = function(code, language) {
+    return `&lt;pre style="background: #f5f5f5; padding: 1em;"&gt;
+        &lt;code&gt;${code}&lt;/code&gt;
+    &lt;/pre&gt;`;
+};
+
+marked.use({ renderer });</pre>
+                </div>
+            </article>
+
+            <article class="api-section">
+                <h2>Error Handling</h2>
+                <div class="code-block">
+                    <pre>async function convertMarkdownToPDF(markdown) {
+    try {
+        const html = marked.parse(markdown);
+        
+        if (!html || html.trim() === '') {
+            throw new Error('Empty Markdown content');
+        }
+        
+        const element = document.createElement('div');
+        element.innerHTML = html;
+        
+        await html2pdf()
+            .set(options)
+            .from(element)
+            .save();
+            
+        console.log('PDF generated successfully');
+        
+    } catch (error) {
+        console.error('PDF generation failed:', error);
+        throw error;
+    }
+}</pre>
+                </div>
+            </article>
+
+            <article class="api-section">
+                <h2>Browser Compatibility</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Browser</th>
+                            <th>Minimum Version</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chrome</td>
+                            <td>60+</td>
+                            <td>✅ Fully Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Firefox</td>
+                            <td>55+</td>
+                            <td>✅ Fully Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Safari</td>
+                            <td>11+</td>
+                            <td>✅ Fully Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Edge</td>
+                            <td>79+</td>
+                            <td>✅ Fully Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Opera</td>
+                            <td>47+</td>
+                            <td>✅ Fully Supported</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <div class="warning-box">
+                <h3 style="color: #f59e0b; margin: 0 0 var(--spacing-sm) 0;">⚠️ Important Notes</h3>
+                <ul style="margin: 0; color: var(--text-primary);">
+                    <li>All processing happens client-side in the browser</li>
+                    <li>Large documents may take longer to process</li>
+                    <li>Images must be CORS-enabled or base64 encoded</li>
+                    <li>Some CSS features may not render perfectly in PDF</li>
+                </ul>
+            </div>
+
+            <article class="api-section">
+                <h2>Resources</h2>
+                <ul style="color: var(--text-secondary); line-height: 2;">
+                    <li><a href="https://marked.js.org/" target="_blank">Marked.js Documentation</a></li>
+                    <li><a href="https://github.com/eKoopmans/html2pdf.js" target="_blank">html2pdf.js GitHub</a></li>
+                    <li><a href="/examples.html">Example Templates</a></li>
+                    <li><a href="/guide.html">User Guide</a></li>
+                    <li><a href="/contact.html">Contact Support</a></li>
+                </ul>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="8" fill="url(#gradient2)" />
+                            <path d="M8 12L16 20L24 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#667EEA" />
+                                    <stop offset="1" stop-color="#764BA2" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>MarkdownPDF</span>
+                    </div>
+                    <p class="footer-description">The fastest and most secure way to convert Markdown to PDF online.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/features.html">Features</a></li>
+                        <li><a href="/guide.html">User Guide</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/markdown-syntax.html">Markdown Syntax</a></li>
+                        <li><a href="/examples.html">Examples</a></li>
+                        <li><a href="/api.html">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MarkdownPDF. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
