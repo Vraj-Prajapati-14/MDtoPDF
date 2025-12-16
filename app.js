@@ -130,7 +130,6 @@ async function downloadPDF() {
         return;
     }
 
-    // Check if preview has content
     if (!previewContent.innerHTML || previewContent.innerHTML.includes('Start typing to see preview')) {
         showNotification('Please wait for preview to load', 'warning');
         return;
@@ -153,88 +152,174 @@ async function downloadPDF() {
     try {
         const pageSize = pageSizeSelect.value;
         const orientation = orientationSelect.value;
+        const marginMm = 12; // Moderate margin
 
-        // Create a temporary overlay to ensure content is available for html2canvas
-        // We use opacity 0 to hide it from the user, but restore it in the onclone callback for capture
+        // Determine Page Width in mm
+        const pageSizes = {
+            a4: 210,
+            letter: 216,
+            legal: 216,
+            a3: 297
+        };
+        // If landscape, swapping width/height logic (roughly) implies the width is the larger dimension
+        // Standard heights: A4=297, Letter=279, Legal=356, A3=420
+        const pageHeights = {
+            a4: 297,
+            letter: 279,
+            legal: 356,
+            a3: 420
+        };
+
+        const baseWidth = pageSizes[pageSize];
+        const baseHeight = pageHeights[pageSize];
+
+        // Printable area calculation
+        const pdfPageWidth = orientation === 'landscape' ? baseHeight : baseWidth;
+        const printWidth = pdfPageWidth - (marginMm * 2);
+
+        // 1. Create a "shadow" overlay
         overlay = document.createElement('div');
         overlay.id = 'pdf-overlay-root';
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = '#ffffff';
-        overlay.style.zIndex = '-9999'; // Behind everything
-        overlay.style.opacity = '0';    // Invisible to user
-        overlay.style.overflow = 'hidden';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -9999;
+            opacity: 0;
+            overflow: auto;
+            background-color: #ffffff;
+        `;
         document.body.appendChild(overlay);
 
-        // Clone the live preview content
+        // 2. Clone content
         tempContainer = previewContent.cloneNode(true);
         tempContainer.classList.add('pdf-content');
 
-        // Match width to PDF format
-        const pdfWidth = orientation === 'landscape' ? '297mm' : '210mm';
-
-        // Reset styles for the container
-        tempContainer.style.width = pdfWidth;
-        tempContainer.style.maxWidth = 'none';
-        tempContainer.style.height = 'auto';
-        tempContainer.style.overflow = 'visible';
+        // 3. Precise Width Control
+        // Setting width to exactly the printable area ensures HTML text wrapping matches PDF render space exactly.
+        // This prevents the "formatting drift" where text wraps differently in browser vs PDF.
+        tempContainer.style.width = `${printWidth}mm`;
+        tempContainer.style.maxWidth = `${printWidth}mm`;
+        tempContainer.style.minWidth = `${printWidth}mm`;
         tempContainer.style.margin = '0 auto';
+        tempContainer.style.padding = '0';
+        tempContainer.style.height = 'auto';
 
-        // Add print-specific styles
+        // Pre-process code blocks to prevent mid-line cutting
+        // We wrap every line of code in a div with page-break-inside: avoid
+        const codeBlocks = tempContainer.querySelectorAll('pre code');
+        codeBlocks.forEach(block => {
+            const rawHtml = block.innerHTML;
+            // Split by newline while preserving the HTML formatting (simple approach)
+            // Note: complex syntax highlighting spans might span across lines, usually marked.js/highlight.js handles this well,
+            // but for safety we simply ensure block display for lines if possible.
+            // A safer, robust way for raw text or simple spans:
+            const lines = rawHtml.split(/\r\n|\r|\n/);
+            if (lines.length > 1) {
+                // We reconstruct the block as a stack of divs
+                block.innerHTML = lines.map(line =>
+                    // Empty lines need a space to be rendered
+                    `<div class="code-line">${line || ' '}</div>`
+                ).join('');
+                block.classList.add('processed-code-block');
+            }
+        });
+
+        // 4. Styles for the PDF content
         const style = document.createElement('style');
         style.innerHTML = `
             .pdf-content {
                 font-family: Arial, sans-serif;
-                font-size: 12pt;
+                font-size: 11pt; /* Slightly smaller for better fit */
                 line-height: 1.5;
-                color: #000000 !important;
-                background: #ffffff !important;
-                padding: 20px;
+                color: #000000;
+                background: #ffffff;
                 box-sizing: border-box;
             }
             .pdf-content * {
-                color: #000000 !important;
+                box-sizing: border-box;
                 visibility: visible !important;
-                opacity: 1 !important;
+                max-width: 100% !important;
             }
+            
+            /* Typography */
+            .pdf-content h1 { font-size: 24pt; border-bottom: 2px solid #333; margin-top: 0; padding-bottom: 5px; }
+            .pdf-content h2 { font-size: 18pt; border-bottom: 1px solid #ccc; margin-top: 20px; padding-bottom: 5px; }
+            .pdf-content h3 { font-size: 14pt; margin-top: 15px; }
+            .pdf-content p { margin-bottom: 10px; text-align: justify; }
+            
+            /* Page Break Logic */
             .pdf-content h1, .pdf-content h2, .pdf-content h3 {
                 page-break-after: avoid;
-                border-bottom: 1px solid #ddd;
-                padding-bottom: 5px;
-            }
-            .pdf-content pre, .pdf-content code {
-                background-color: #f5f5f5 !important;
-                border: 1px solid #ccc;
                 page-break-inside: avoid;
-                white-space: pre-wrap;
             }
-            .pdf-content img {
-                max-width: 100% !important;
-                page-break-inside: avoid;
+            
+            /* Critical fix for code line cutting */
+            .pdf-content pre {
+                background: #f6f8fa;
+                border: 1px solid #d0d7de;
+                padding: 12px;
+                border-radius: 4px;
+                margin-bottom: 1em;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 10pt;
+                page-break-inside: auto; /* Allow the container to break */
+            }
+            
+            .pdf-content code {
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+                display: block; /* Important for the line divs to stack */
+            }
+
+            .pdf-content .code-line {
+                page-break-inside: avoid; /* Never break inside a single line of code */
                 display: block;
+                width: 100%;
             }
-            .pdf-content table {
-                width: 100% !important;
-                border-collapse: collapse;
+
+            .pdf-content blockquote {
+                border-left: 4px solid #007bff;
+                padding-left: 10px;
+                color: #555;
+                font-style: italic;
+                margin: 10px 0;
                 page-break-inside: avoid;
+            }
+            
+            .pdf-content table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 15px 0;
+                page-break-inside: auto; /* Allow tables to break */
             }
             .pdf-content th, .pdf-content td {
-                border: 1px solid #ccc;
-                padding: 8px;
+                border: 1px solid #dfe2e5;
+                padding: 6px 13px;
+                vertical-align: top;
+            }
+            .pdf-content tr {
+                background-color: #fff;
+                border-top: 1px solid #c6cbd1;
+                page-break-inside: avoid; /* Don't break single rows */
+            }
+            .pdf-content img {
+                page-break-inside: avoid;
+                max-width: 100%;
+                height: auto;
             }
         `;
         overlay.appendChild(style);
         overlay.appendChild(tempContainer);
 
-        // Small delay to ensure DOM insertion
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Allow layout settle
+        await new Promise(resolve => setTimeout(resolve, 150));
 
-        // Simplified configuration
+        // 5. PDF Generation Configuration
         const opt = {
-            margin: [10, 10, 10, 10],
+            margin: marginMm,
             filename: 'markdown.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
@@ -242,14 +327,17 @@ async function downloadPDF() {
                 useCORS: true,
                 logging: false,
                 scrollY: 0,
-                windowWidth: document.documentElement.offsetWidth,
-                windowHeight: document.documentElement.offsetHeight,
-                // Critical: Make the overlay visible in the clone that html2canvas uses
+                // Ensure we capture the overlay specifically
+                windowWidth: overlay.offsetWidth,
+                windowHeight: overlay.scrollHeight,
                 onclone: (clonedDoc) => {
                     const clonedOverlay = clonedDoc.getElementById('pdf-overlay-root');
                     if (clonedOverlay) {
                         clonedOverlay.style.opacity = '1';
-                        clonedOverlay.style.zIndex = '99999'; // Ensure it's on top in the clone
+                        clonedOverlay.style.zIndex = '99999';
+                        clonedOverlay.style.position = 'relative';
+                        clonedOverlay.style.height = 'auto';
+                        clonedOverlay.style.overflow = 'visible';
                     }
                 }
             },
@@ -261,7 +349,6 @@ async function downloadPDF() {
             pagebreak: { mode: ['css', 'legacy'] }
         };
 
-        // Generate PDF from the container inside the overlay
         await html2pdf().set(opt).from(tempContainer).save();
         showNotification('PDF downloaded successfully!', 'success');
 
