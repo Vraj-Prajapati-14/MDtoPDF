@@ -124,7 +124,7 @@ function handleFileUpload(event) {
 }
 
 /**
- * Download PDF - Canvas slicing approach (capture once, slice for pages)
+ * Download PDF - Professional print method with modern styling
  */
 async function downloadPDF() {
     const markdownText = markdownInput.value;
@@ -144,209 +144,451 @@ async function downloadPDF() {
     `;
     downloadBtn.disabled = true;
 
-    let cloneDiv = null;
-
     try {
         const pageSize = pageSizeSelect.value;
         const orientation = orientationSelect.value;
 
-        console.log('Starting PDF generation with canvas slicing...');
+        console.log('Starting professional PDF generation...');
 
         // Get the HTML content
         const htmlContent = marked.parse(markdownText);
         
-        // Create a clean clone div
-        cloneDiv = document.createElement('div');
-        cloneDiv.innerHTML = htmlContent;
-        cloneDiv.id = 'pdf-render-clone';
+        // Create print window with professional styling
+        const printWindow = window.open('', '_blank', 'width=900,height=700');
         
-        // Apply comprehensive inline styles
-        cloneDiv.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 800px;
-            padding: 40px;
-            background: white;
-            color: black;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.6;
-            z-index: 999999;
-            box-sizing: border-box;
-        `;
+        if (!printWindow) {
+            throw new Error('Please allow pop-ups for this site to generate PDFs');
+        }
         
-        // Apply styles to all child elements
-        const applyInlineStyles = (element) => {
-            const tag = element.tagName;
-            const styleMap = {
-                'H1': 'font-size:28px;font-weight:700;margin:24px 0 16px 0;padding-bottom:8px;border-bottom:2px solid #333;color:#000;',
-                'H2': 'font-size:24px;font-weight:700;margin:20px 0 12px 0;padding-bottom:6px;border-bottom:1px solid #666;color:#000;',
-                'H3': 'font-size:20px;font-weight:700;margin:16px 0 10px 0;color:#000;',
-                'H4': 'font-size:18px;font-weight:700;margin:14px 0 8px 0;color:#000;',
-                'H5': 'font-size:16px;font-weight:700;margin:12px 0 6px 0;color:#000;',
-                'H6': 'font-size:14px;font-weight:700;margin:10px 0 6px 0;color:#000;',
-                'P': 'margin:0 0 12px 0;color:#000;line-height:1.6;',
-                'UL': 'margin:0 0 12px 0;padding-left:30px;color:#000;',
-                'OL': 'margin:0 0 12px 0;padding-left:30px;color:#000;',
-                'LI': 'margin-bottom:6px;color:#000;',
-                'PRE': 'background:#f5f5f5;border:1px solid #ddd;padding:12px;margin:12px 0;font-family:Courier,monospace;font-size:12px;white-space:pre-wrap;color:#000;',
-                'CODE': 'font-family:Courier,monospace;font-size:12px;background:#f5f5f5;padding:2px 6px;color:#000;',
-                'A': 'color:#0066cc;text-decoration:underline;',
-                'STRONG': 'font-weight:700;color:#000;',
-                'EM': 'font-style:italic;color:#000;',
-                'TABLE': 'width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;',
-                'TH': 'border:1px solid #ccc;padding:8px 12px;text-align:left;color:#000;background:#e6e6e6;font-weight:700;',
-                'TD': 'border:1px solid #ccc;padding:8px 12px;text-align:left;color:#000;',
-                'BLOCKQUOTE': 'border-left:4px solid #666;padding:10px 10px 10px 16px;margin:12px 0;color:#555;font-style:italic;background:#fafafa;',
-                'HR': 'border:none;border-top:1px solid #b4b4b4;margin:20px 0;'
-            };
-            
-            if (styleMap[tag]) {
-                element.style.cssText = (element.style.cssText || '') + styleMap[tag];
+        // Write complete HTML document with modern, professional CSS
+        printWindow.document.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Document</title>
+    <style>
+        /* ==========================================
+           PRINT SETTINGS
+           ========================================== */
+        @media print {
+            @page {
+                size: ${pageSize} ${orientation};
+                margin: 20mm 18mm;
             }
             
-            // Recursively apply to children
-            Array.from(element.children).forEach(child => applyInlineStyles(child));
-        };
-        
-        // Apply styles
-        applyInlineStyles(cloneDiv);
-        
-        // Special handling for PRE CODE
-        cloneDiv.querySelectorAll('pre code').forEach(code => {
-            code.style.cssText = 'background:none;padding:0;color:#000;font-family:Courier,monospace;';
-        });
-        
-        // Append to body
-        document.body.appendChild(cloneDiv);
-        
-        const totalHeight = cloneDiv.scrollHeight;
-        const totalWidth = cloneDiv.scrollWidth;
-        
-        console.log('Clone appended, dimensions:', totalWidth, 'x', totalHeight);
-        
-        // Wait for fonts and layout
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        console.log('Capturing entire document...');
-        
-        // Capture the ENTIRE content once with moderate scale
-        const fullCanvas = await html2canvas(cloneDiv, {
-            scale: 1.2,  // Moderate scale
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            width: totalWidth,
-            height: totalHeight,
-            windowWidth: totalWidth,
-            windowHeight: totalHeight,
-            scrollX: 0,
-            scrollY: 0
-        });
-        
-        console.log('Full canvas created:', fullCanvas.width, 'x', fullCanvas.height);
-        
-        // Create PDF
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: orientation,
-            unit: 'mm',
-            format: pageSize,
-            compress: true
-        });
-
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        const contentWidth = pdfWidth - (2 * margin);
-        const contentHeight = pdfHeight - (2 * margin);
-        
-        // Calculate dimensions
-        const pdfWidthPx = (contentWidth / 25.4) * 96;  // Convert mm to pixels (96 DPI)
-        const pdfHeightPx = (contentHeight / 25.4) * 96;
-        
-        // Scale factor from canvas to PDF
-        const scale = fullCanvas.width / pdfWidthPx;
-        const pageHeightInCanvasPx = pdfHeightPx * scale;
-        
-        console.log('Page height in canvas pixels:', pageHeightInCanvasPx);
-        console.log('Total pages needed:', Math.ceil(fullCanvas.height / pageHeightInCanvasPx));
-        
-        // Slice the canvas and create pages
-        let currentY = 0;
-        let pageCount = 0;
-        
-        while (currentY < fullCanvas.height) {
-            if (pageCount > 0) {
-                pdf.addPage();
+            body {
+                margin: 0;
+                padding: 0;
             }
             
-            const sliceHeight = Math.min(pageHeightInCanvasPx, fullCanvas.height - currentY);
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
             
-            console.log(`Creating page ${pageCount + 1}: slicing from y=${currentY} height=${sliceHeight}`);
+            a {
+                color: #2563eb !important;
+                text-decoration: underline !important;
+            }
             
-            // Create a new canvas for this slice
-            const sliceCanvas = document.createElement('canvas');
-            sliceCanvas.width = fullCanvas.width;
-            sliceCanvas.height = sliceHeight;
+            /* Prevent page breaks in inappropriate places */
+            h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
             
-            const sliceCtx = sliceCanvas.getContext('2d');
+            pre, blockquote, table {
+                page-break-inside: avoid !important;
+            }
             
-            // Draw the slice from the full canvas
-            sliceCtx.drawImage(
-                fullCanvas,
-                0, currentY,  // Source x, y
-                fullCanvas.width, sliceHeight,  // Source width, height
-                0, 0,  // Destination x, y
-                fullCanvas.width, sliceHeight  // Destination width, height
-            );
-            
-            // Convert slice to image
-            const imgData = sliceCanvas.toDataURL('image/png', 0.92);
-            
-            // Add to PDF
-            const imgHeightMM = (sliceHeight / scale / 96) * 25.4;  // Convert back to mm
-            
-            pdf.addImage(
-                imgData,
-                'PNG',
-                margin,
-                margin,
-                contentWidth,
-                Math.min(imgHeightMM, contentHeight),
-                undefined,
-                'FAST'
-            );
-            
-            console.log(`Page ${pageCount + 1} added`);
-            
-            pageCount++;
-            currentY += sliceHeight;
-            
-            // Safety limit
-            if (pageCount > 500) {
-                console.warn('Page limit reached');
-                break;
+            img {
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
             }
         }
-
-        console.log('PDF created with', pageCount, 'page(s)');
-
-        pdf.save('markdown-document.pdf');
-        showNotification('PDF downloaded successfully!', 'success');
+        
+        /* ==========================================
+           BASE STYLES
+           ========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: #ffffff;
+            max-width: 100%;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* ==========================================
+           HEADINGS - Modern & Professional
+           ========================================== */
+        h1 {
+            font-size: 28pt;
+            font-weight: 800;
+            margin: 0 0 24pt 0;
+            padding: 0 0 16pt 0;
+            color: #111827;
+            line-height: 1.2;
+            border-bottom: 3pt solid #2563eb;
+            letter-spacing: -0.02em;
+            page-break-after: avoid;
+        }
+        
+        h2 {
+            font-size: 22pt;
+            font-weight: 700;
+            margin: 28pt 0 16pt 0;
+            padding: 0 0 12pt 0;
+            color: #1f2937;
+            line-height: 1.3;
+            border-bottom: 2pt solid #e5e7eb;
+            letter-spacing: -0.01em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 18pt;
+            font-weight: 700;
+            margin: 24pt 0 14pt 0;
+            color: #374151;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 15pt;
+            font-weight: 600;
+            margin: 20pt 0 12pt 0;
+            color: #4b5563;
+            line-height: 1.4;
+            page-break-after: avoid;
+        }
+        
+        h5 {
+            font-size: 13pt;
+            font-weight: 600;
+            margin: 18pt 0 10pt 0;
+            color: #6b7280;
+            line-height: 1.4;
+            page-break-after: avoid;
+        }
+        
+        h6 {
+            font-size: 11pt;
+            font-weight: 600;
+            margin: 16pt 0 8pt 0;
+            color: #9ca3af;
+            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            page-break-after: avoid;
+        }
+        
+        /* ==========================================
+           PARAGRAPHS & TEXT
+           ========================================== */
+        p {
+            margin: 0 0 12pt 0;
+            color: #374151;
+            line-height: 1.7;
+            orphans: 3;
+            widows: 3;
+        }
+        
+        strong, b {
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        em, i {
+            font-style: italic;
+            color: #4b5563;
+        }
+        
+        /* ==========================================
+           LISTS - Clean & Organized
+           ========================================== */
+        ul, ol {
+            margin: 0 0 14pt 0;
+            padding-left: 28pt;
+        }
+        
+        li {
+            margin-bottom: 8pt;
+            color: #374151;
+            line-height: 1.7;
+        }
+        
+        li:last-child {
+            margin-bottom: 0;
+        }
+        
+        ul li {
+            list-style-type: disc;
+        }
+        
+        ul ul li {
+            list-style-type: circle;
+        }
+        
+        ul ul ul li {
+            list-style-type: square;
+        }
+        
+        ol {
+            counter-reset: item;
+        }
+        
+        ol li {
+            list-style-type: decimal;
+        }
+        
+        /* ==========================================
+           CODE BLOCKS - Syntax Highlighted Style
+           ========================================== */
+        pre {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border: 1pt solid #e5e7eb;
+            border-left: 4pt solid #3b82f6;
+            border-radius: 6pt;
+            padding: 14pt 16pt;
+            margin: 16pt 0;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', monospace;
+            font-size: 9.5pt;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #1f2937;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            box-shadow: 0 2pt 4pt rgba(0, 0, 0, 0.05);
+        }
+        
+        code {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', monospace;
+            font-size: 9.5pt;
+            background: #f3f4f6;
+            padding: 2pt 6pt;
+            color: #dc2626;
+            border-radius: 3pt;
+            border: 1pt solid #e5e7eb;
+            font-weight: 500;
+        }
+        
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #1f2937;
+            border: none;
+            font-size: 9.5pt;
+            font-weight: 400;
+        }
+        
+        /* ==========================================
+           TABLES - Modern Professional Design
+           ========================================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18pt 0;
+            font-size: 10pt;
+            background: #ffffff;
+            border-radius: 8pt;
+            overflow: hidden;
+            box-shadow: 0 2pt 8pt rgba(0, 0, 0, 0.08);
+            page-break-inside: avoid;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        th {
+            padding: 12pt 16pt;
+            text-align: left;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: none;
+        }
+        
+        tbody tr {
+            border-bottom: 1pt solid #e5e7eb;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        tbody tr:hover {
+            background: #f3f4f6;
+        }
+        
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        td {
+            padding: 12pt 16pt;
+            text-align: left;
+            color: #374151;
+            border: none;
+        }
+        
+        /* ==========================================
+           LINKS - Clickable & Styled
+           ========================================== */
+        a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1pt solid #93c5fd;
+            padding-bottom: 1pt;
+            transition: all 0.2s ease;
+        }
+        
+        a:hover {
+            color: #1d4ed8;
+            border-bottom-color: #2563eb;
+        }
+        
+        /* ==========================================
+           BLOCKQUOTES - Beautiful Callouts
+           ========================================== */
+        blockquote {
+            position: relative;
+            border-left: 4pt solid #3b82f6;
+            padding: 14pt 18pt 14pt 22pt;
+            margin: 16pt 0;
+            background: linear-gradient(to right, #eff6ff 0%, #ffffff 100%);
+            color: #1e40af;
+            font-style: italic;
+            border-radius: 0 6pt 6pt 0;
+            box-shadow: 0 2pt 4pt rgba(0, 0, 0, 0.05);
+        }
+        
+        blockquote p {
+            color: #1e40af;
+            margin-bottom: 8pt;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* ==========================================
+           HORIZONTAL RULES
+           ========================================== */
+        hr {
+            border: none;
+            height: 2pt;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            margin: 24pt 0;
+        }
+        
+        /* ==========================================
+           IMAGES
+           ========================================== */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6pt;
+            box-shadow: 0 4pt 12pt rgba(0, 0, 0, 0.1);
+            margin: 16pt 0;
+            display: block;
+        }
+        
+        /* ==========================================
+           TABLE OF CONTENTS - Special Styling
+           ========================================== */
+        h2:first-of-type + ul,
+        h1:first-of-type + ul {
+            background: #f9fafb;
+            padding: 20pt;
+            border-radius: 8pt;
+            border: 1pt solid #e5e7eb;
+            margin: 20pt 0;
+        }
+        
+        /* Style TOC links specifically */
+        ul li a[href^="#"] {
+            color: #3b82f6;
+            font-weight: 500;
+            border-bottom: 1pt dotted #93c5fd;
+            padding: 2pt 0;
+        }
+        
+        ul li a[href^="#"]:hover {
+            color: #1d4ed8;
+            border-bottom-style: solid;
+        }
+        
+        /* ==========================================
+           UTILITY CLASSES
+           ========================================== */
+        .page-break {
+            page-break-after: always;
+        }
+        
+        /* ==========================================
+           FIRST PAGE SPECIAL STYLING
+           ========================================== */
+        h1:first-child {
+            margin-top: 0;
+            padding-top: 0;
+        }
+    </style>
+</head>
+<body>
+${htmlContent}
+<script>
+    // Auto-trigger print dialog after content loads
+    window.onload = function() {
+        // Small delay to ensure fonts and styles are loaded
+        setTimeout(function() {
+            window.print();
+            // Note: Window will close automatically after print dialog is dismissed
+            window.onafterprint = function() {
+                setTimeout(function() {
+                    window.close();
+                }, 500);
+            };
+        }, 800);
+    };
+<\/script>
+</body>
+</html>
+        `);
+        
+        printWindow.document.close();
+        
+        console.log('Professional PDF print window opened');
+        showNotification('Print dialog opened! Save as PDF to download.', 'success');
 
     } catch (error) {
         console.error('PDF generation error:', error);
         showNotification('Error: ' + error.message, 'error');
     } finally {
-        // Clean up
-        if (cloneDiv && cloneDiv.parentNode) {
-            document.body.removeChild(cloneDiv);
-        }
-        downloadBtn.innerHTML = originalText;
-        downloadBtn.disabled = false;
+        // Reset button after a delay
+        setTimeout(() => {
+            downloadBtn.innerHTML = originalText;
+            downloadBtn.disabled = false;
+        }, 2000);
     }
 }
 
