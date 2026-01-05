@@ -123,15 +123,13 @@ function handleFileUpload(event) {
     event.target.value = '';
 }
 
+/**
+ * Download PDF - Canvas slicing approach (capture once, slice for pages)
+ */
 async function downloadPDF() {
     const markdownText = markdownInput.value;
     if (!markdownText.trim()) {
         showNotification('Please add some content before downloading', 'warning');
-        return;
-    }
-
-    if (!previewContent.innerHTML || previewContent.innerHTML.includes('Start typing to see preview')) {
-        showNotification('Please wait for preview to load', 'warning');
         return;
     }
 
@@ -146,218 +144,206 @@ async function downloadPDF() {
     `;
     downloadBtn.disabled = true;
 
-    let tempContainer = null;
-    let overlay = null;
+    let cloneDiv = null;
 
     try {
         const pageSize = pageSizeSelect.value;
         const orientation = orientationSelect.value;
-        const marginMm = 12; // Moderate margin
 
-        // Determine Page Width in mm
-        const pageSizes = {
-            a4: 210,
-            letter: 216,
-            legal: 216,
-            a3: 297
-        };
-        // If landscape, swapping width/height logic (roughly) implies the width is the larger dimension
-        // Standard heights: A4=297, Letter=279, Legal=356, A3=420
-        const pageHeights = {
-            a4: 297,
-            letter: 279,
-            legal: 356,
-            a3: 420
-        };
+        console.log('Starting PDF generation with canvas slicing...');
 
-        const baseWidth = pageSizes[pageSize];
-        const baseHeight = pageHeights[pageSize];
-
-        // Printable area calculation
-        const pdfPageWidth = orientation === 'landscape' ? baseHeight : baseWidth;
-        const printWidth = pdfPageWidth - (marginMm * 2);
-
-        // 1. Create a "shadow" overlay
-        overlay = document.createElement('div');
-        overlay.id = 'pdf-overlay-root';
-        overlay.style.cssText = `
+        // Get the HTML content
+        const htmlContent = marked.parse(markdownText);
+        
+        // Create a clean clone div
+        cloneDiv = document.createElement('div');
+        cloneDiv.innerHTML = htmlContent;
+        cloneDiv.id = 'pdf-render-clone';
+        
+        // Apply comprehensive inline styles
+        cloneDiv.style.cssText = `
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -9999;
-            opacity: 0;
-            overflow: auto;
-            background-color: #ffffff;
+            width: 800px;
+            padding: 40px;
+            background: white;
+            color: black;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            z-index: 999999;
+            box-sizing: border-box;
         `;
-        document.body.appendChild(overlay);
-
-        // 2. Clone content
-        tempContainer = previewContent.cloneNode(true);
-        tempContainer.classList.add('pdf-content');
-
-        // 3. Precise Width Control
-        // Setting width to exactly the printable area ensures HTML text wrapping matches PDF render space exactly.
-        // This prevents the "formatting drift" where text wraps differently in browser vs PDF.
-        tempContainer.style.width = `${printWidth}mm`;
-        tempContainer.style.maxWidth = `${printWidth}mm`;
-        tempContainer.style.minWidth = `${printWidth}mm`;
-        tempContainer.style.margin = '0 auto';
-        tempContainer.style.padding = '0';
-        tempContainer.style.height = 'auto';
-
-        // Pre-process code blocks to prevent mid-line cutting
-        // We wrap every line of code in a div with page-break-inside: avoid
-        const codeBlocks = tempContainer.querySelectorAll('pre code');
-        codeBlocks.forEach(block => {
-            const rawHtml = block.innerHTML;
-            // Split by newline while preserving the HTML formatting (simple approach)
-            // Note: complex syntax highlighting spans might span across lines, usually marked.js/highlight.js handles this well,
-            // but for safety we simply ensure block display for lines if possible.
-            // A safer, robust way for raw text or simple spans:
-            const lines = rawHtml.split(/\r\n|\r|\n/);
-            if (lines.length > 1) {
-                // We reconstruct the block as a stack of divs
-                block.innerHTML = lines.map(line =>
-                    // Empty lines need a space to be rendered
-                    `<div class="code-line">${line || ' '}</div>`
-                ).join('');
-                block.classList.add('processed-code-block');
+        
+        // Apply styles to all child elements
+        const applyInlineStyles = (element) => {
+            const tag = element.tagName;
+            const styleMap = {
+                'H1': 'font-size:28px;font-weight:700;margin:24px 0 16px 0;padding-bottom:8px;border-bottom:2px solid #333;color:#000;',
+                'H2': 'font-size:24px;font-weight:700;margin:20px 0 12px 0;padding-bottom:6px;border-bottom:1px solid #666;color:#000;',
+                'H3': 'font-size:20px;font-weight:700;margin:16px 0 10px 0;color:#000;',
+                'H4': 'font-size:18px;font-weight:700;margin:14px 0 8px 0;color:#000;',
+                'H5': 'font-size:16px;font-weight:700;margin:12px 0 6px 0;color:#000;',
+                'H6': 'font-size:14px;font-weight:700;margin:10px 0 6px 0;color:#000;',
+                'P': 'margin:0 0 12px 0;color:#000;line-height:1.6;',
+                'UL': 'margin:0 0 12px 0;padding-left:30px;color:#000;',
+                'OL': 'margin:0 0 12px 0;padding-left:30px;color:#000;',
+                'LI': 'margin-bottom:6px;color:#000;',
+                'PRE': 'background:#f5f5f5;border:1px solid #ddd;padding:12px;margin:12px 0;font-family:Courier,monospace;font-size:12px;white-space:pre-wrap;color:#000;',
+                'CODE': 'font-family:Courier,monospace;font-size:12px;background:#f5f5f5;padding:2px 6px;color:#000;',
+                'A': 'color:#0066cc;text-decoration:underline;',
+                'STRONG': 'font-weight:700;color:#000;',
+                'EM': 'font-style:italic;color:#000;',
+                'TABLE': 'width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;',
+                'TH': 'border:1px solid #ccc;padding:8px 12px;text-align:left;color:#000;background:#e6e6e6;font-weight:700;',
+                'TD': 'border:1px solid #ccc;padding:8px 12px;text-align:left;color:#000;',
+                'BLOCKQUOTE': 'border-left:4px solid #666;padding:10px 10px 10px 16px;margin:12px 0;color:#555;font-style:italic;background:#fafafa;',
+                'HR': 'border:none;border-top:1px solid #b4b4b4;margin:20px 0;'
+            };
+            
+            if (styleMap[tag]) {
+                element.style.cssText = (element.style.cssText || '') + styleMap[tag];
             }
+            
+            // Recursively apply to children
+            Array.from(element.children).forEach(child => applyInlineStyles(child));
+        };
+        
+        // Apply styles
+        applyInlineStyles(cloneDiv);
+        
+        // Special handling for PRE CODE
+        cloneDiv.querySelectorAll('pre code').forEach(code => {
+            code.style.cssText = 'background:none;padding:0;color:#000;font-family:Courier,monospace;';
+        });
+        
+        // Append to body
+        document.body.appendChild(cloneDiv);
+        
+        const totalHeight = cloneDiv.scrollHeight;
+        const totalWidth = cloneDiv.scrollWidth;
+        
+        console.log('Clone appended, dimensions:', totalWidth, 'x', totalHeight);
+        
+        // Wait for fonts and layout
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('Capturing entire document...');
+        
+        // Capture the ENTIRE content once with moderate scale
+        const fullCanvas = await html2canvas(cloneDiv, {
+            scale: 1.2,  // Moderate scale
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width: totalWidth,
+            height: totalHeight,
+            windowWidth: totalWidth,
+            windowHeight: totalHeight,
+            scrollX: 0,
+            scrollY: 0
+        });
+        
+        console.log('Full canvas created:', fullCanvas.width, 'x', fullCanvas.height);
+        
+        // Create PDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: orientation,
+            unit: 'mm',
+            format: pageSize,
+            compress: true
         });
 
-        // 4. Styles for the PDF content
-        const style = document.createElement('style');
-        style.innerHTML = `
-            .pdf-content {
-                font-family: Arial, sans-serif;
-                font-size: 11pt; /* Slightly smaller for better fit */
-                line-height: 1.5;
-                color: #000000;
-                background: #ffffff;
-                box-sizing: border-box;
-            }
-            .pdf-content * {
-                box-sizing: border-box;
-                visibility: visible !important;
-                max-width: 100% !important;
-            }
-            
-            /* Typography */
-            .pdf-content h1 { font-size: 24pt; border-bottom: 2px solid #333; margin-top: 0; padding-bottom: 5px; }
-            .pdf-content h2 { font-size: 18pt; border-bottom: 1px solid #ccc; margin-top: 20px; padding-bottom: 5px; }
-            .pdf-content h3 { font-size: 14pt; margin-top: 15px; }
-            .pdf-content p { margin-bottom: 10px; text-align: justify; }
-            
-            /* Page Break Logic */
-            .pdf-content h1, .pdf-content h2, .pdf-content h3 {
-                page-break-after: avoid;
-                page-break-inside: avoid;
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const contentWidth = pdfWidth - (2 * margin);
+        const contentHeight = pdfHeight - (2 * margin);
+        
+        // Calculate dimensions
+        const pdfWidthPx = (contentWidth / 25.4) * 96;  // Convert mm to pixels (96 DPI)
+        const pdfHeightPx = (contentHeight / 25.4) * 96;
+        
+        // Scale factor from canvas to PDF
+        const scale = fullCanvas.width / pdfWidthPx;
+        const pageHeightInCanvasPx = pdfHeightPx * scale;
+        
+        console.log('Page height in canvas pixels:', pageHeightInCanvasPx);
+        console.log('Total pages needed:', Math.ceil(fullCanvas.height / pageHeightInCanvasPx));
+        
+        // Slice the canvas and create pages
+        let currentY = 0;
+        let pageCount = 0;
+        
+        while (currentY < fullCanvas.height) {
+            if (pageCount > 0) {
+                pdf.addPage();
             }
             
-            /* Critical fix for code line cutting */
-            .pdf-content pre {
-                background: #f6f8fa;
-                border: 1px solid #d0d7de;
-                padding: 12px;
-                border-radius: 4px;
-                margin-bottom: 1em;
-                font-family: Consolas, "Courier New", monospace;
-                font-size: 10pt;
-                page-break-inside: auto; /* Allow the container to break */
-            }
+            const sliceHeight = Math.min(pageHeightInCanvasPx, fullCanvas.height - currentY);
             
-            .pdf-content code {
-                white-space: pre-wrap !important;
-                word-wrap: break-word !important;
-                display: block; /* Important for the line divs to stack */
-            }
-
-            .pdf-content .code-line {
-                page-break-inside: avoid; /* Never break inside a single line of code */
-                display: block;
-                width: 100%;
-            }
-
-            .pdf-content blockquote {
-                border-left: 4px solid #007bff;
-                padding-left: 10px;
-                color: #555;
-                font-style: italic;
-                margin: 10px 0;
-                page-break-inside: avoid;
-            }
+            console.log(`Creating page ${pageCount + 1}: slicing from y=${currentY} height=${sliceHeight}`);
             
-            .pdf-content table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 15px 0;
-                page-break-inside: auto; /* Allow tables to break */
+            // Create a new canvas for this slice
+            const sliceCanvas = document.createElement('canvas');
+            sliceCanvas.width = fullCanvas.width;
+            sliceCanvas.height = sliceHeight;
+            
+            const sliceCtx = sliceCanvas.getContext('2d');
+            
+            // Draw the slice from the full canvas
+            sliceCtx.drawImage(
+                fullCanvas,
+                0, currentY,  // Source x, y
+                fullCanvas.width, sliceHeight,  // Source width, height
+                0, 0,  // Destination x, y
+                fullCanvas.width, sliceHeight  // Destination width, height
+            );
+            
+            // Convert slice to image
+            const imgData = sliceCanvas.toDataURL('image/png', 0.92);
+            
+            // Add to PDF
+            const imgHeightMM = (sliceHeight / scale / 96) * 25.4;  // Convert back to mm
+            
+            pdf.addImage(
+                imgData,
+                'PNG',
+                margin,
+                margin,
+                contentWidth,
+                Math.min(imgHeightMM, contentHeight),
+                undefined,
+                'FAST'
+            );
+            
+            console.log(`Page ${pageCount + 1} added`);
+            
+            pageCount++;
+            currentY += sliceHeight;
+            
+            // Safety limit
+            if (pageCount > 500) {
+                console.warn('Page limit reached');
+                break;
             }
-            .pdf-content th, .pdf-content td {
-                border: 1px solid #dfe2e5;
-                padding: 6px 13px;
-                vertical-align: top;
-            }
-            .pdf-content tr {
-                background-color: #fff;
-                border-top: 1px solid #c6cbd1;
-                page-break-inside: avoid; /* Don't break single rows */
-            }
-            .pdf-content img {
-                page-break-inside: avoid;
-                max-width: 100%;
-                height: auto;
-            }
-        `;
-        overlay.appendChild(style);
-        overlay.appendChild(tempContainer);
+        }
 
-        // Allow layout settle
-        await new Promise(resolve => setTimeout(resolve, 150));
+        console.log('PDF created with', pageCount, 'page(s)');
 
-        // 5. PDF Generation Configuration
-        const opt = {
-            margin: marginMm,
-            filename: 'markdown.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                scrollY: 0,
-                // Ensure we capture the overlay specifically
-                windowWidth: overlay.offsetWidth,
-                windowHeight: overlay.scrollHeight,
-                onclone: (clonedDoc) => {
-                    const clonedOverlay = clonedDoc.getElementById('pdf-overlay-root');
-                    if (clonedOverlay) {
-                        clonedOverlay.style.opacity = '1';
-                        clonedOverlay.style.zIndex = '99999';
-                        clonedOverlay.style.position = 'relative';
-                        clonedOverlay.style.height = 'auto';
-                        clonedOverlay.style.overflow = 'visible';
-                    }
-                }
-            },
-            jsPDF: {
-                unit: 'mm',
-                format: pageSize,
-                orientation: orientation
-            },
-            pagebreak: { mode: ['css', 'legacy'] }
-        };
-
-        await html2pdf().set(opt).from(tempContainer).save();
+        pdf.save('markdown-document.pdf');
         showNotification('PDF downloaded successfully!', 'success');
 
     } catch (error) {
         console.error('PDF generation error:', error);
-        showNotification('Error generating PDF. Please try again.', 'error');
+        showNotification('Error: ' + error.message, 'error');
     } finally {
-        if (overlay && overlay.parentNode) {
-            document.body.removeChild(overlay);
+        // Clean up
+        if (cloneDiv && cloneDiv.parentNode) {
+            document.body.removeChild(cloneDiv);
         }
         downloadBtn.innerHTML = originalText;
         downloadBtn.disabled = false;
