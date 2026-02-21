@@ -1,0 +1,29 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Free Markdown to PDF Converter - Best Fast Accurate Online MD to PDF Tool | MarkdownPDF",
+  description: "Best free online Markdown to PDF converter tool. Fast, accurate, and secure MD to PDF conversion. Convert markdown files to PDF instantly. No registration, developer-friendly, 100% free dev tool.",
+  keywords: ["markdown to pdf", "md to pdf", "convert markdown to pdf", "markdown converter", "free pdf converter"],
+  authors: [{ name: "MarkdownPDF" }],
+  openGraph: {
+    title: "Free Markdown to PDF Converter - Best Fast Accurate Online MD to PDF Tool",
+    description: "Best free online Markdown to PDF converter tool. Professional PDF conversion with real-time preview.",
+    type: "website",
+    url: "https://www.markdownpdf.com/",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+      </body>
+    </html>
+  );
+}

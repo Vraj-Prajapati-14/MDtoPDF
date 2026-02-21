@@ -1,0 +1,68 @@
+# Robots.txt for MarkdownPDF - Best Free Fast Accurate Markdown to PDF Converter
+# https://www.markdownpdf.com/robots.txt
+
+# Allow all search engines to crawl the entire site
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.markdownpdf.com/sitemap.xml
+
+# Crawl-delay for polite crawling (1 second)
+Crawl-delay: 1
+
+# Disallow specific paths (if any)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Allow all major search engines with optimized settings
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+# Additional search engines
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: ia_archiver
+Allow: /
+
+# Block bad bots (optional - uncomment if needed)
+# User-agent: AhrefsBot
+# Disallow: /
+# 
+# User-agent: SemrushBot
+# Disallow: /
