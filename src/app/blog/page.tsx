@@ -1,14 +1,16 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { PenLine, Rocket, Zap, Palette, BarChart3, ShieldCheck } from 'lucide-react';
+import { ReactNode } from 'react';
 
 export default function BlogPage() {
-    const posts = [
-        { emoji: '📝', date: 'Dec 12, 2024', readTime: '5 min read', title: '10 Markdown Tips for Better Documentation', excerpt: 'Learn essential Markdown techniques to create clear, professional documentation that\'s easy to read and maintain.', tags: ['Markdown', 'Tips', 'Documentation'] },
-        { emoji: '🚀', date: 'Dec 10, 2024', readTime: '4 min read', title: 'How to Create Professional PDFs from Markdown', excerpt: 'A comprehensive guide to converting your Markdown documents into beautifully formatted PDF files.', tags: ['PDF', 'Tutorial', 'Guide'] },
-        { emoji: '⚡', date: 'Dec 8, 2024', readTime: '6 min read', title: 'Markdown vs. Word: Which is Better?', excerpt: 'Compare Markdown and Microsoft Word for creating technical documentation and learn when to use each.', tags: ['Comparison', 'Productivity'] },
-        { emoji: '🎨', date: 'Dec 5, 2024', readTime: '5 min read', title: 'Styling Your Markdown for PDF Export', excerpt: 'Best practices for formatting Markdown content to ensure your PDFs look professional and polished.', tags: ['Styling', 'PDF', 'Design'] },
-        { emoji: '📊', date: 'Dec 3, 2024', readTime: '7 min read', title: 'Creating Tables in Markdown: A Complete Guide', excerpt: 'Master the art of creating beautiful, well-formatted tables in Markdown for your documents.', tags: ['Tables', 'Tutorial'] },
-        { emoji: '🔒', date: 'Dec 1, 2024', readTime: '4 min read', title: 'Why Privacy Matters in Document Conversion', excerpt: 'Understanding the importance of client-side processing and how it protects your sensitive documents.', tags: ['Privacy', 'Security'] },
+    const posts: { icon: ReactNode; date: string; readTime: string; title: string; excerpt: string; tags: string[] }[] = [
+        { icon: <PenLine size={48} strokeWidth={1.5} />, date: 'Dec 12, 2024', readTime: '5 min read', title: '10 Markdown Tips for Better Documentation', excerpt: 'Learn essential Markdown techniques to create clear, professional documentation that\'s easy to read and maintain.', tags: ['Markdown', 'Tips', 'Documentation'] },
+        { icon: <Rocket size={48} strokeWidth={1.5} />, date: 'Dec 10, 2024', readTime: '4 min read', title: 'How to Create Professional PDFs from Markdown', excerpt: 'A comprehensive guide to converting your Markdown documents into beautifully formatted PDF files.', tags: ['PDF', 'Tutorial', 'Guide'] },
+        { icon: <Zap size={48} strokeWidth={1.5} />, date: 'Dec 8, 2024', readTime: '6 min read', title: 'Markdown vs. Word: Which is Better?', excerpt: 'Compare Markdown and Microsoft Word for creating technical documentation and learn when to use each.', tags: ['Comparison', 'Productivity'] },
+        { icon: <Palette size={48} strokeWidth={1.5} />, date: 'Dec 5, 2024', readTime: '5 min read', title: 'Styling Your Markdown for PDF Export', excerpt: 'Best practices for formatting Markdown content to ensure your PDFs look professional and polished.', tags: ['Styling', 'PDF', 'Design'] },
+        { icon: <BarChart3 size={48} strokeWidth={1.5} />, date: 'Dec 3, 2024', readTime: '7 min read', title: 'Creating Tables in Markdown: A Complete Guide', excerpt: 'Master the art of creating beautiful, well-formatted tables in Markdown for your documents.', tags: ['Tables', 'Tutorial'] },
+        { icon: <ShieldCheck size={48} strokeWidth={1.5} />, date: 'Dec 1, 2024', readTime: '4 min read', title: 'Why Privacy Matters in Document Conversion', excerpt: 'Understanding the importance of client-side processing and how it protects your sensitive documents.', tags: ['Privacy', 'Security'] },
     ];
 
     return (
@@ -27,11 +29,11 @@ export default function BlogPage() {
                     <div className="blog-grid">
                         {posts.map((post, index) => (
                             <article key={index} className="blog-card">
-                                <div className="blog-image">{post.emoji}</div>
+                                <div className="blog-image">{post.icon}</div>
                                 <div className="blog-content">
                                     <div className="blog-meta">
                                         <span>{post.date}</span>
-                                        <span>•</span>
+                                        <span>&bull;</span>
                                         <span>{post.readTime}</span>
                                     </div>
                                     <h3>{post.title}</h3>

@@ -1,0 +1,2 @@
+MarkdownPDF provides in-browser Markdown to PDF conversion with professional formatting and Mermaid diagram support. 
+Key pages: /, /features, /guide, /markdown-syntax, /examples, /markdown-to-pdf, /md-to-pdf, /markdown-to-pdf-online, /markdown-to-pdf-converter, /convert-markdown-to-pdf, /markdown-to-pdf-free.

@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import { ShieldCheck } from 'lucide-react';
 
 export default function PrivacyPage() {
     return (
@@ -17,7 +18,7 @@ export default function PrivacyPage() {
 
             <div className="legal-content">
                 <div className="highlight-box">
-                    <h3 style={{ color: 'var(--primary-color)', margin: '0 0 var(--spacing-sm) 0' }}>🔒 Privacy First Approach</h3>
+                    <h3 style={{ color: 'var(--primary-color)', margin: '0 0 var(--spacing-sm) 0', display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={20} /> Privacy First Approach</h3>
                     <p style={{ margin: 0, color: 'var(--text-primary)' }}>
                         <strong>All processing happens locally in your browser. Your documents never leave your device. We don't collect, store, or transmit your content.</strong>
                     </p>

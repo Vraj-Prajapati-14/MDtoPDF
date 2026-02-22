@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import { Lightbulb } from 'lucide-react';
 
 export default function GuidePage() {
     return (
@@ -30,7 +31,7 @@ export default function GuidePage() {
                     </ol>
 
                     <div className="tip-box">
-                        <strong>💡 Pro Tip:</strong> Your work is automatically saved in your browser. You can close the tab
+                        <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><Lightbulb size={16} /> Pro Tip:</strong> Your work is automatically saved in your browser. You can close the tab
                         and come back later without losing your progress!
                     </div>
                 </article>

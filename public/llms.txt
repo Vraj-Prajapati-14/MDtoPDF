@@ -1,0 +1,20 @@
+# MarkdownPDF
+
+MarkdownPDF is a free, client-side Markdown to PDF converter. It supports tables, code blocks, and Mermaid diagrams (exported as JPG images). Users can control page size, orientation, font family, base font size, headers, footers, and the output filename.
+
+## Key Pages
+- / (main tool)
+- /features
+- /guide
+- /markdown-syntax
+- /examples
+- /markdown-to-pdf
+- /md-to-pdf
+- /markdown-to-pdf-online
+- /markdown-to-pdf-converter
+- /convert-markdown-to-pdf
+- /markdown-to-pdf-free
+
+## Notes
+- All conversion runs in the browser.
+- No file uploads are required.

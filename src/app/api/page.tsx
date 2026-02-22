@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { BookOpen, AlertTriangle } from 'lucide-react';
 
 export default function ApiPage() {
     return (
@@ -15,7 +16,7 @@ export default function ApiPage() {
 
             <div className="api-content">
                 <div className="note-box">
-                    <h3 style={{ color: '#3b82f6', margin: '0 0 var(--spacing-sm) 0' }}>📘 Client-Side Library</h3>
+                    <h3 style={{ color: '#3b82f6', margin: '0 0 var(--spacing-sm) 0', display: 'flex', alignItems: 'center', gap: '8px' }}><BookOpen size={20} /> Client-Side Library</h3>
                     <p style={{ margin: 0, color: 'var(--text-primary)' }}>
                         MarkdownPDF operates entirely in the browser. Below is documentation for integrating similar functionality into your own apps using JavaScript.
                     </p>
@@ -88,7 +89,7 @@ html2pdf()
                 </article>
 
                 <div className="warning-box">
-                    <h3 style={{ color: '#f59e0b', margin: '0 0 var(--spacing-sm) 0' }}>⚠️ Important Notes</h3>
+                    <h3 style={{ color: '#f59e0b', margin: '0 0 var(--spacing-sm) 0', display: 'flex', alignItems: 'center', gap: '8px' }}><AlertTriangle size={20} /> Important Notes</h3>
                     <ul style={{ margin: 0, color: 'var(--text-primary)' }}>
                         <li>All processing happens client-side in the browser.</li>
                         <li>Large documents may take longer to process.</li>

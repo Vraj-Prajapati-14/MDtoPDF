@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { Mail, MessageSquare, Bug } from 'lucide-react';
 
 export default function ContactPage() {
     const [status, setStatus] = useState('');
@@ -28,7 +29,7 @@ export default function ContactPage() {
             <div className="contact-content">
                 <div className="contact-info">
                     <div className="info-card">
-                        <div className="info-icon">📧</div>
+                        <div className="info-icon"><Mail size={40} strokeWidth={1.5} /></div>
                         <h3>Email Us</h3>
                         <p>connect@markdownpdf.com</p>
                         <p style={{ fontSize: '0.85rem', marginTop: 'var(--spacing-sm)', color: 'var(--text-tertiary)' }}>
@@ -37,7 +38,7 @@ export default function ContactPage() {
                     </div>
 
                     <div className="info-card">
-                        <div className="info-icon">💬</div>
+                        <div className="info-icon"><MessageSquare size={40} strokeWidth={1.5} /></div>
                         <h3>Feedback</h3>
                         <p>Share your ideas</p>
                         <p style={{ fontSize: '0.85rem', marginTop: 'var(--spacing-sm)', color: 'var(--text-tertiary)' }}>
@@ -46,7 +47,7 @@ export default function ContactPage() {
                     </div>
 
                     <div className="info-card">
-                        <div className="info-icon">🐛</div>
+                        <div className="info-icon"><Bug size={40} strokeWidth={1.5} /></div>
                         <h3>Report a Bug</h3>
                         <p>found-a-bug@markdownpdf.com</p>
                         <p style={{ fontSize: '0.85rem', marginTop: 'var(--spacing-sm)', color: 'var(--text-tertiary)' }}>

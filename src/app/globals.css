@@ -347,8 +347,17 @@ a:hover {
 }
 
 .feature-icon {
-  font-size: 2.5rem;
   margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--radius-lg);
+  background: rgba(102, 126, 234, 0.12);
+  color: var(--primary-light);
 }
 
 /* Buttons */
@@ -491,7 +500,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .blog-content {
@@ -587,8 +596,106 @@ a:hover {
 }
 
 .info-icon {
-  font-size: 3rem;
   margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--radius-lg);
+  background: rgba(102, 126, 234, 0.12);
+  color: var(--primary-light);
+}
+
+/* SEO Landing Pages */
+.seo-page {
+  padding: var(--spacing-2xl) 0;
+}
+
+.seo-hero {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.seo-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: var(--spacing-sm);
+}
+
+.seo-subtitle {
+  color: var(--text-secondary);
+  max-width: 900px;
+  margin: 0 auto var(--spacing-lg);
+  font-size: 1.15rem;
+}
+
+.seo-cta {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.seo-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.seo-section-title {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.seo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.seo-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  transition: transform var(--transition-normal);
+}
+
+.seo-card:hover {
+  transform: translateY(-4px);
+}
+
+.seo-faq {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.seo-faq-item {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.seo-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.seo-link {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.seo-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
 }
 
 /* Example Card Styles */

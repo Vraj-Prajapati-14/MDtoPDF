@@ -3,6 +3,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import React, { useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 
 export default function ExamplesPage() {
     const examples = [
@@ -75,9 +76,9 @@ University of Technology | 2014 - 2018`
                             <button
                                 className="copy-btn"
                                 onClick={() => handleCopy(example.id, example.code)}
-                                style={copiedId === example.id ? { background: '#10b981', borderColor: '#10b981' } : {}}
+                                style={copiedId === example.id ? { background: '#10b981', borderColor: '#10b981', display: 'inline-flex', alignItems: 'center', gap: '6px' } : { display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                             >
-                                {copiedId === example.id ? '✅ Copied!' : '📋 Copy'}
+                                {copiedId === example.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                             </button>
                         </div>
                         <div className="example-code">
