@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "Free Markdown to PDF Converter - Best Fast Accurate Online MD to PDF Tool | MarkdownPDF",
@@ -29,9 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <body>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
