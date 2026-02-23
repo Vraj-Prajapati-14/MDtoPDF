@@ -147,7 +147,8 @@ export default function Converter() {
             return `<img src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} crossorigin="anonymous" />`;
         };
 
-        return marked.parse(md, { renderer, gfm: true, breaks: true }) as string;
+        const cleanMd = md.replace(/^\s+/, '');
+        return marked.parse(cleanMd, { renderer, gfm: true, breaks: true }) as string;
     };
 
     const renderMermaidDiagrams = async () => {
@@ -554,7 +555,7 @@ Ready to start? Edit this text or upload your own file.`);
 
     const downloadPDF = async () => {
         if (!markdown.trim() || !jsPDF) {
-            alert('PDF libraries are still loading. Please try again in a moment.');
+            toast.warning('Still loading', 'PDF libraries are still loading. Please try again in a moment.');
             return;
         }
 
@@ -579,11 +580,14 @@ Ready to start? Edit this text or upload your own file.`);
             const contentWidth = pageWidth - margin.left - margin.right;
             let currentY = margin.top;
             let pageNumber = 1;
-            const baseLineHeight = baseFontSize * 0.5;
+            const baseLineHeight = baseFontSize * 0.53;
             const shouldRenderHeader = headerEnabled;
             const shouldRenderFooter = footerEnabled || showPageNumbers;
 
             const headerTextValue = headerText.trim() || (firstHeading?.text ? firstHeading.text.substring(0, 60) : 'Document');
+
+            // --- TRACK FIRST CONTENT ---
+            let isFirstContent = true;
 
             const addHeader = () => {
                 if (!shouldRenderHeader) return;
@@ -649,7 +653,7 @@ Ready to start? Edit this text or upload your own file.`);
                 maxWidth = contentWidth
             ) => {
                 if (!text) return;
-                const lineHeight = options.size * 0.5;
+                const lineHeight = options.size * 0.53;
                 let currentX = xStart;
 
                 const renderEmoji = async (emoji: string) => {
@@ -795,7 +799,9 @@ Ready to start? Edit this text or upload your own file.`);
                 const spacing = fontSize * 0.6;
                 checkPageBreak(fontSize + spacing);
                 await drawWrappedText(token.text || '', { font: fontFamily, style: 'bold', size: fontSize, color: [26, 26, 26] });
-                if (level <= 2) {
+                // Only h1 (document title) gets an underline — h2 underlines near page-bottom
+                // would stack on top of the footer separator and create a double-line artifact.
+                if (level === 1) {
                     pdf.setDrawColor(204, 204, 204);
                     pdf.setLineWidth(0.2);
                     pdf.line(margin.left, currentY + 1, pageWidth - margin.right, currentY + 1);
@@ -932,22 +938,23 @@ Ready to start? Edit this text or upload your own file.`);
                 };
 
                 const drawRow = (row: string[], y: number, style: { fill: number[]; text: number[]; border: number[] }, bold = false) => {
-                    pdf.setFillColor(style.fill[0], style.fill[1], style.fill[2]);
-                    pdf.setDrawColor(style.border[0], style.border[1], style.border[2]);
                     pdf.setFont(fontFamily as any, bold ? 'bold' : 'normal');
                     pdf.setFontSize(fontSize);
-                    pdf.setTextColor(style.text[0], style.text[1], style.text[2]);
 
+                    const rowHeight = measureRowHeight(row);
                     row.forEach((cell, colIndex) => {
                         const x = margin.left + colIndex * colWidth;
                         const lines = pdf.splitTextToSize(cell || '', colWidth - 4);
-                        const rowHeight = measureRowHeight(row);
+                        // Re-apply fill + draw + text colors per cell to avoid jsPDF state bleed
+                        pdf.setFillColor(style.fill[0], style.fill[1], style.fill[2]);
+                        pdf.setDrawColor(style.border[0], style.border[1], style.border[2]);
                         pdf.rect(x, y, colWidth, rowHeight, 'FD');
+                        pdf.setTextColor(style.text[0], style.text[1], style.text[2]);
                         lines.forEach((line: string, lineIdx: number) => {
                             pdf.text(line, x + 2, y + rowPadding + (lineIdx + 1) * lineHeight);
                         });
                     });
-                    return measureRowHeight(row);
+                    return rowHeight;
                 };
 
                 const headerHeight = measureRowHeight(headers);
@@ -975,9 +982,12 @@ Ready to start? Edit this text or upload your own file.`);
 
             for (const token of tokens) {
                 if (token.type === 'space') {
-                    currentY += baseLineHeight;
+                    if (!isFirstContent) {
+                        currentY += baseLineHeight;
+                    }
                     continue;
                 }
+                isFirstContent = false;
                 if (token.type === 'heading') {
                     await renderHeading(token);
                     continue;
@@ -1003,14 +1013,17 @@ Ready to start? Edit this text or upload your own file.`);
                     continue;
                 }
                 if (token.type === 'hr') {
-                    addFooter();
-                    pdf.addPage();
-                    pageNumber++;
-                    currentY = margin.top;
-                    addHeader();
-                    if (shouldRenderHeader) {
-                        currentY = margin.top + 10;
+                    // Only draw the hr line when comfortably away from the bottom margin.
+                    // If we're near the bottom, the footer already has its own separator line —
+                    // drawing here too would create a distracting double-line just above the footer.
+                    const nearBottom = currentY > pageHeight - margin.bottom - 18;
+                    if (!nearBottom) {
+                        ensureLineSpace(6);
+                        pdf.setDrawColor(180, 180, 180);
+                        pdf.setLineWidth(0.3);
+                        pdf.line(margin.left, currentY, pageWidth - margin.right, currentY);
                     }
+                    currentY += baseLineHeight * 0.8;
                     continue;
                 }
                 if (token.type === 'table') {
@@ -1048,9 +1061,10 @@ Ready to start? Edit this text or upload your own file.`);
 
             addFooter();
             pdf.save(`${filename}.pdf`);
+            toast.success('Downloaded!', `${filename}.pdf has been saved.`);
         } catch (error) {
             console.error('PDF Generation Error:', error);
-            alert('Failed to generate PDF. Please try again.');
+            toast.error('Generation failed', 'Failed to generate PDF. Please try again.');
         } finally {
             setIsGenerating(false);
         }
@@ -1501,10 +1515,18 @@ Ready to start? Edit this text or upload your own file.`);
                                     className="preview-page"
                                     style={{
                                         width: `${previewWidth}mm`,
-                                        height: `${previewHeight}mm`,
+                                        minHeight: `${previewHeight}mm`,
                                         fontFamily: previewFont,
                                         fontSize: `${baseFontSize}pt`,
-                                        ['--preview-base-size' as any]: `${baseFontSize}pt`
+                                        ['--preview-base-size' as any]: `${baseFontSize}pt`,
+                                        // Dynamic Table Theme Colors
+                                        ['--table-header-bg' as any]: `rgb(${TABLE_THEMES[tableTheme].header.fill.join(',')})`,
+                                        ['--table-header-text' as any]: `rgb(${TABLE_THEMES[tableTheme].header.text.join(',')})`,
+                                        ['--table-header-border' as any]: `rgb(${TABLE_THEMES[tableTheme].header.border.join(',')})`,
+                                        ['--table-row-even-bg' as any]: `rgb(${TABLE_THEMES[tableTheme].rowEven.fill.join(',')})`,
+                                        ['--table-row-odd-bg' as any]: `rgb(${TABLE_THEMES[tableTheme].rowOdd.fill.join(',')})`,
+                                        ['--table-row-text' as any]: `rgb(${TABLE_THEMES[tableTheme].rowEven.text.join(',')})`,
+                                        ['--table-row-border' as any]: `rgb(${TABLE_THEMES[tableTheme].rowEven.border.join(',')})`
                                     }}
                                 >
                                     {headerEnabled && (
@@ -1887,51 +1909,74 @@ Ready to start? Edit this text or upload your own file.`);
                 }
                 .preview-page {
                     margin: 0 auto;
-                    background: white;
+                    background: #ffffff;
                     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
                     position: relative;
                     box-sizing: border-box;
                     max-width: 100%;
+                    /* Use min-height not height — lets short content collapse naturally */
+                    min-height: unset !important;
                 }
                 .preview-header, .preview-footer {
                     position: absolute;
                     left: 20mm;
                     right: 20mm;
-                    color: #999;
+                    color: #888;
                     font-size: 8pt;
+                    background: transparent;
                 }
                 .preview-header { top: 10mm; }
                 .preview-footer { bottom: 10mm; display: flex; justify-content: center; }
                 .preview-footer.split { justify-content: space-between; }
                 .pdf-preview {
                     padding: 0;
-                    background: white;
+                    background: #ffffff;
                     font-size: var(--preview-base-size, 10pt);
                     line-height: 1.5;
                     color: #2c2c2c;
                     box-sizing: border-box;
-                    min-height: 100%;
                 }
                 .pdf-preview h1 { font-size: calc(var(--preview-base-size, 10pt) + 8pt); font-weight: 700; color: #1a1a1a; margin: 0 0 6pt 0; padding-bottom: 2pt; border-bottom: 0.5pt solid #ccc; line-height: 1.3; }
                 .pdf-preview h2 { font-size: calc(var(--preview-base-size, 10pt) + 4pt); font-weight: 600; color: #1a1a1a; margin: 10pt 0 5pt 0; padding-bottom: 2pt; border-bottom: 0.5pt solid #e0e0e0; line-height: 1.3; }
                 .pdf-preview h3 { font-size: calc(var(--preview-base-size, 10pt) + 2pt); font-weight: 600; color: #2c2c2c; margin: 8pt 0 4pt 0; line-height: 1.3; }
                 .pdf-preview h4 { font-size: calc(var(--preview-base-size, 10pt) + 1pt); font-weight: 600; color: #2c2c2c; margin: 6pt 0 3pt 0; }
-                .pdf-preview p { margin: 0 0 5pt 0; color: #2c2c2c; line-height: 1.4; }
-                .pdf-preview strong { font-weight: 600; color: #1a1a1a; }
+                .pdf-preview p { margin: 0 0 6pt 0; color: #2c2c2c; line-height: 1.5; }
+                .pdf-preview strong { font-weight: 700; color: #1a1a1a; }
+                .pdf-preview em { font-style: italic; }
                 .pdf-preview a { color: #0066cc; text-decoration: underline; }
-                .pdf-preview ul, .pdf-preview ol { margin: 0 0 5pt 0; padding-left: 20pt; }
-                .pdf-preview li { margin-bottom: 2pt; }
-                .pdf-preview pre { background-color: #f5f5f5; border: 0.5pt solid #d0d0d0; border-left: 2pt solid #666; border-radius: 2px; padding: 8pt; margin: 6pt 0; font-family: monospace; font-size: 8pt; line-height: 1.4; overflow-x: auto; }
-                .pdf-preview code { font-family: monospace; background-color: #f0f0f0; color: #c7254e; padding: 1pt 3pt; border-radius: 2px; font-size: 9pt; }
-                .pdf-preview pre code { background: transparent; padding: 0; color: #1a1a1a; }
-                .pdf-preview table { width: 100%; border-collapse: collapse; margin: 8pt 0; border: 0.5pt solid #ccc; }
-                .pdf-preview th { background-color: #f0f0f0; color: #1a1a1a; font-weight: 600; padding: 6pt 8pt; border: 0.5pt solid #ccc; font-size: 9.5pt; text-align: left; }
-                .pdf-preview td { padding: 6pt 8pt; border: 0.5pt solid #d0d0d0; font-size: 9.5pt; }
-                .pdf-preview tbody tr:nth-child(even) { background-color: #fafafa; }
-                .pdf-preview blockquote { border-left: 2pt solid #666; background-color: #f9f9f9; padding: 8pt 10pt; margin: 8pt 0; }
+                .pdf-preview ul, .pdf-preview ol { margin: 0 0 6pt 0; padding-left: 18pt; }
+                .pdf-preview li { margin-bottom: 2pt; color: #2c2c2c; line-height: 1.5; }
+                .pdf-preview pre { background-color: #f5f5f5 !important; border: 0.5pt solid #d0d0d0; border-left: 2.5pt solid #555; border-radius: 3px; padding: 8pt 10pt; margin: 6pt 0 8pt 0; font-family: 'Courier New', Courier, monospace; font-size: 8.5pt; line-height: 1.45; overflow-x: auto; }
+                .pdf-preview code { font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0 !important; color: #c7254e !important; padding: 1pt 3pt; border-radius: 2px; font-size: 9pt; }
+                .pdf-preview pre code { background: transparent !important; padding: 0; color: #1a1a1a !important; }
+                /* ── TABLE FIX: force all cells to white bg & dark text, never inherit theme ── */
+                .pdf-preview table { width: 100%; border-collapse: collapse; margin: 8pt 0 10pt 0; font-size: 9.5pt; table-layout: fixed; }
+                .pdf-preview thead { background-color: var(--table-header-bg, #f0f0f0) !important; }
+                .pdf-preview th { 
+                    background-color: var(--table-header-bg, #f0f0f0) !important; 
+                    color: var(--table-header-text, #1a1a1a) !important; 
+                    font-weight: 700; 
+                    padding: 5pt 8pt; 
+                    border: 0.75pt solid var(--table-header-border, #c8c8c8) !important; 
+                    text-align: left; 
+                    line-height: 1.4; 
+                    word-wrap: break-word;
+                }
+                .pdf-preview td { 
+                    background-color: var(--table-row-odd-bg, #ffffff) !important; 
+                    color: var(--table-row-text, #2c2c2c) !important; 
+                    padding: 5pt 8pt; 
+                    border: 0.5pt solid var(--table-row-border, #d8d8d8) !important; 
+                    line-height: 1.4; 
+                    vertical-align: top;
+                    word-wrap: break-word;
+                }
+                .pdf-preview tbody tr:nth-child(even) td { background-color: var(--table-row-even-bg, #f8f8f8) !important; }
+                .pdf-preview tbody tr:hover td { background-color: #f0f4ff !important; }
+                .pdf-preview blockquote { border-left: 2.5pt solid #888; background-color: #f9f9f9 !important; color: #444 !important; padding: 8pt 12pt; margin: 8pt 0; font-style: italic; }
                 .pdf-preview img { max-width: 100%; height: auto; margin: 10pt auto; display: block; }
-                .pdf-preview hr { border: none; border-top: 0.5pt solid #ccc; margin: 16pt 0; }
-                .pdf-preview .mermaid-diagram, .pdf-preview .mermaid-rendered { margin: 10pt 0; padding: 10pt; text-align: center; background-color: #fafafa; border: 0.5pt solid #e0e0e0; }
+                .pdf-preview hr { border: none; border-top: 0.5pt solid #ccc; margin: 14pt 0; }
+                .pdf-preview .mermaid-diagram, .pdf-preview .mermaid-rendered { margin: 10pt 0; padding: 10pt; text-align: center; background-color: #fafafa !important; border: 0.5pt solid #e0e0e0; }
                 .spinner { animation: spin 1s linear infinite; }
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 @media (max-width: 1024px) {
