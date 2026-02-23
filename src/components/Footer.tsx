@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
     return (
@@ -7,22 +8,36 @@ export default function Footer() {
                 <div className="footer-content">
                     <div className="footer-section">
                         <Link href="/" className="footer-logo">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="8" fill="url(#gradient2)" />
-                                <path d="M8 12L16 20L24 12" stroke="white" strokeWidth="2.5" strokeLinecap="round"
-                                    strokeLinejoin="round" />
-                                <defs>
-                                    <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32"
-                                        gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#667EEA" />
-                                        <stop offset="1" stopColor="#764BA2" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
+                            <Image
+                                src="/logo.png"
+                                alt="MarkdownPDF Logo"
+                                width={80}
+                                height={60}
+                                className="footer-logo-img"
+                            />
                             <span>MarkdownPDF</span>
                         </Link>
                         <p className="footer-description">The fastest and most secure way to convert Markdown to PDF online.</p>
+
+                        {/* Rivonix Tech branding badge */}
+                        <a
+                            href="https://www.rivonixtech.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rivonix-badge"
+                            title="MarkdownPDF is built by Rivonix Tech"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            <span className="rivonix-badge-label">Crafted by</span>
+                            <span className="rivonix-badge-name">Rivonix Tech</span>
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M2.5 2.5H9.5M9.5 2.5V9.5M9.5 2.5L2.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </a>
                     </div>
+
                     <div className="footer-section">
                         <h4>Product</h4>
                         <ul className="footer-links">
@@ -49,8 +64,21 @@ export default function Footer() {
                         </ul>
                     </div>
                 </div>
+
                 <div className="footer-bottom">
                     <p>&copy; {new Date().getFullYear()} MarkdownPDF. All rights reserved.</p>
+                    <p className="footer-bottom-credit">
+                        Built &amp; maintained by{' '}
+                        <a
+                            href="https://www.rivonixtech.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rivonix-link"
+                        >
+                            Rivonix Tech
+                        </a>
+                        {' '}— Web &amp; Software Development Company
+                    </p>
                 </div>
             </div>
         </footer>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { marked } from 'marked';
@@ -291,7 +291,7 @@ Ready to start? Edit this text or upload your own file.`);
         const textarea = textareaRef.current;
         if (!textarea) return;
 
-        // Tab → indent with 2 spaces
+        // Tab â†’ indent with 2 spaces
         if (e.key === 'Tab') {
             e.preventDefault();
             const start = textarea.selectionStart;
@@ -357,27 +357,27 @@ Ready to start? Edit this text or upload your own file.`);
     const TEMPLATES: { label: string; icon: string; content: string }[] = [
         {
             label: 'Technical Report',
-            icon: '📄',
-            content: `# Technical Report\n\n**Author:** Your Name  \n**Date:** ${new Date().toLocaleDateString()}  \n**Version:** 1.0\n\n---\n\n## Executive Summary\n\nA brief overview of the report's purpose and key findings.\n\n## Introduction\n\nBackground information and context for the report.\n\n## Methodology\n\nDescribe the methods used to gather data and conduct analysis.\n\n## Results\n\n| Metric | Value | Notes |\n| --- | --- | --- |\n| Item 1 | — | — |\n| Item 2 | — | — |\n\n## Conclusion\n\nSummarize the findings and recommendations.\n\n## References\n\n1. Reference one\n2. Reference two\n`
+            icon: 'ðŸ“„',
+            content: `# Technical Report\n\n**Author:** Your Name  \n**Date:** ${new Date().toLocaleDateString()}  \n**Version:** 1.0\n\n---\n\n## Executive Summary\n\nA brief overview of the report's purpose and key findings.\n\n## Introduction\n\nBackground information and context for the report.\n\n## Methodology\n\nDescribe the methods used to gather data and conduct analysis.\n\n## Results\n\n| Metric | Value | Notes |\n| --- | --- | --- |\n| Item 1 | â€” | â€” |\n| Item 2 | â€” | â€” |\n\n## Conclusion\n\nSummarize the findings and recommendations.\n\n## References\n\n1. Reference one\n2. Reference two\n`
         },
         {
             label: 'Meeting Notes',
-            icon: '📝',
+            icon: 'ðŸ“',
             content: `# Meeting Notes\n\n**Date:** ${new Date().toLocaleDateString()}  \n**Attendees:** Name 1, Name 2  \n**Facilitator:** Name\n\n---\n\n## Agenda\n\n1. Topic One\n2. Topic Two\n3. Action Items\n\n## Discussion\n\n### Topic One\n\nKey points discussed...\n\n### Topic Two\n\nKey points discussed...\n\n## Action Items\n\n| # | Task | Owner | Due Date |\n| --- | --- | --- | --- |\n| 1 | Task description | Owner | Date |\n| 2 | Task description | Owner | Date |\n\n## Next Meeting\n\n**Date:** TBD  \n**Location:** TBD\n`
         },
         {
             label: 'README',
-            icon: '📦',
-            content: `# Project Name\n\n> A short description of what this project does.\n\n![License](https://img.shields.io/badge/license-MIT-blue)\n\n## Features\n\n- ✅ Feature one\n- ✅ Feature two\n- ✅ Feature three\n\n## Installation\n\n\`\`\`bash\nnpm install your-package\n\`\`\`\n\n## Usage\n\n\`\`\`javascript\nconst pkg = require('your-package');\npkg.doSomething();\n\`\`\`\n\n## Contributing\n\nPull requests are welcome. For major changes, please open an issue first.\n\n## License\n\n[MIT](LICENSE)\n`
+            icon: 'ðŸ“¦',
+            content: `# Project Name\n\n> A short description of what this project does.\n\n![License](https://img.shields.io/badge/license-MIT-blue)\n\n## Features\n\n- âœ… Feature one\n- âœ… Feature two\n- âœ… Feature three\n\n## Installation\n\n\`\`\`bash\nnpm install your-package\n\`\`\`\n\n## Usage\n\n\`\`\`javascript\nconst pkg = require('your-package');\npkg.doSomething();\n\`\`\`\n\n## Contributing\n\nPull requests are welcome. For major changes, please open an issue first.\n\n## License\n\n[MIT](LICENSE)\n`
         },
         {
             label: 'Research Paper',
-            icon: '🔬',
+            icon: 'ðŸ”¬',
             content: `# Research Paper Title\n\n**Abstract:** A concise summary of the research, including the problem, methodology, results, and conclusion.\n\n---\n\n## 1. Introduction\n\nContext and motivation for the research.\n\n## 2. Literature Review\n\nReview of existing work in the field.\n\n## 3. Methodology\n\nDetailed description of the research approach.\n\n## 4. Results\n\nPresentation of findings with data and analysis.\n\n## 5. Discussion\n\nInterpretation of results and implications.\n\n## 6. Conclusion\n\nSummary of findings and future directions.\n\n## References\n\n- Author, A. (Year). *Title*. Publisher.\n- Author, B. (Year). *Title*. Journal, Vol(No), pp.\n`
         },
         {
             label: 'Project Proposal',
-            icon: '🚀',
+            icon: 'ðŸš€',
             content: `# Project Proposal: [Project Title]\n\n**Prepared by:** Your Name  \n**Date:** ${new Date().toLocaleDateString()}\n\n---\n\n## Problem Statement\n\nDescribe the problem this project aims to solve.\n\n## Proposed Solution\n\nOutline the proposed approach and solution.\n\n## Scope\n\n- **In scope:** What will be done\n- **Out of scope:** What will not be done\n\n## Timeline\n\n| Phase | Description | Duration |\n| --- | --- | --- |\n| Phase 1 | Planning | 2 weeks |\n| Phase 2 | Development | 4 weeks |\n| Phase 3 | Testing | 1 week |\n\n## Budget\n\n| Item | Cost |\n| --- | --- |\n| Item 1 | $0 |\n| Total | $0 |\n\n## Success Criteria\n\n1. Criterion one\n2. Criterion two\n`
         }
     ];
@@ -799,7 +799,7 @@ Ready to start? Edit this text or upload your own file.`);
                 const spacing = fontSize * 0.6;
                 checkPageBreak(fontSize + spacing);
                 await drawWrappedText(token.text || '', { font: fontFamily, style: 'bold', size: fontSize, color: [26, 26, 26] });
-                // Only h1 (document title) gets an underline — h2 underlines near page-bottom
+                // Only h1 (document title) gets an underline â€” h2 underlines near page-bottom
                 // would stack on top of the footer separator and create a double-line artifact.
                 if (level === 1) {
                     pdf.setDrawColor(204, 204, 204);
@@ -1014,7 +1014,7 @@ Ready to start? Edit this text or upload your own file.`);
                 }
                 if (token.type === 'hr') {
                     // Only draw the hr line when comfortably away from the bottom margin.
-                    // If we're near the bottom, the footer already has its own separator line —
+                    // If we're near the bottom, the footer already has its own separator line â€”
                     // drawing here too would create a distracting double-line just above the footer.
                     const nearBottom = currentY > pageHeight - margin.bottom - 18;
                     if (!nearBottom) {
@@ -1329,10 +1329,10 @@ Ready to start? Edit this text or upload your own file.`);
                             </h2>
                             <div className="editor-header-actions">
                                 <span className="word-count">
-                                    {wordCount} words · {charCount} chars · {lineCount} lines
+                                    {wordCount} words Â· {charCount} chars Â· {lineCount} lines
                                 </span>
                                 {lastSaved && (
-                                    <span className="autosave-label">✓ Saved</span>
+                                    <span className="autosave-label">âœ“ Saved</span>
                                 )}
                                 <button
                                     onClick={copyToClipboard}
@@ -1558,435 +1558,7 @@ Ready to start? Edit this text or upload your own file.`);
                 </div>
             </div>
 
-            <style jsx global>{`
-                .main-section {
-                    padding: 28px 0 60px;
-                    min-height: calc(100vh - 80px);
-                    transition: background 0.3s ease, color 0.3s ease;
-                }
-                .controls-panel {
-                    display: flex;
-                    gap: 10px;
-                    flex-wrap: wrap;
-                    align-items: center;
-                    padding: 14px 18px;
-                    background: var(--bg-secondary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 16px;
-                    margin-bottom: 20px;
-                    box-shadow: var(--shadow-sm);
-                }
-                .control-group {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    flex-wrap: wrap;
-                }
-                .control-group label {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 5px;
-                    font-size: 0.8rem;
-                    color: var(--text-tertiary);
-                    font-weight: 600;
-                    letter-spacing: 0.03em;
-                    text-transform: uppercase;
-                    white-space: nowrap;
-                }
-                .control-group input[type="checkbox"] {
-                    appearance: none;
-                    -webkit-appearance: none;
-                    width: 36px;
-                    height: 20px;
-                    background: var(--bg-tertiary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 10px;
-                    cursor: pointer;
-                    position: relative;
-                    transition: background 0.2s, border-color 0.2s;
-                    flex-shrink: 0;
-                }
-                .control-group input[type="checkbox"]::after {
-                    content: '';
-                    position: absolute;
-                    top: 2px;
-                    left: 2px;
-                    width: 14px;
-                    height: 14px;
-                    background: var(--text-tertiary);
-                    border-radius: 50%;
-                    transition: transform 0.2s, background 0.2s;
-                }
-                .control-group input[type="checkbox"]:checked {
-                    background: var(--primary-color);
-                    border-color: var(--primary-color);
-                }
-                .control-group input[type="checkbox"]:checked::after {
-                    transform: translateX(16px);
-                    background: #fff;
-                }
-                .select-input, .text-input {
-                    padding: 7px 12px;
-                    background: var(--bg-tertiary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    color: var(--text-primary);
-                    font-family: var(--font-primary);
-                    font-size: 0.85rem;
-                    cursor: pointer;
-                    transition: border-color 0.18s, background 0.18s;
-                    outline: none;
-                }
-                .select-input:focus, .text-input:focus {
-                    border-color: var(--primary-color);
-                    background: var(--bg-primary);
-                }
-                .text-input { min-width: 130px; }
-                .editor-header-actions {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-                .word-count {
-                    font-size: 0.72rem;
-                    color: var(--text-tertiary);
-                    font-family: var(--font-mono);
-                    letter-spacing: 0.02em;
-                }
-                .autosave-label {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 4px;
-                    font-size: 0.72rem;
-                    color: #4ade80;
-                    font-weight: 600;
-                    background: rgba(74,222,128,0.1);
-                    padding: 2px 8px;
-                    border-radius: 999px;
-                    border: 1px solid rgba(74,222,128,0.2);
-                }
-                .md-toolbar {
-                    display: flex;
-                    align-items: center;
-                    gap: 2px;
-                    padding: 6px 10px;
-                    background: var(--bg-secondary);
-                    border-bottom: 1px solid var(--border-color);
-                    flex-wrap: wrap;
-                    overflow-x: auto;
-                }
-                .toolbar-group {
-                    display: flex;
-                    align-items: center;
-                    gap: 1px;
-                    background: var(--bg-tertiary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    padding: 2px;
-                }
-                .toolbar-divider {
-                    width: 1px;
-                    height: 20px;
-                    background: var(--border-color);
-                    margin: 0 4px;
-                    align-self: center;
-                    flex-shrink: 0;
-                }
-                .toolbar-btn {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 30px;
-                    height: 30px;
-                    border: none;
-                    background: transparent;
-                    color: var(--text-secondary);
-                    border-radius: 6px;
-                    cursor: pointer;
-                    transition: background 0.15s, color 0.15s, transform 0.1s;
-                    padding: 0;
-                    flex-shrink: 0;
-                }
-                .toolbar-btn:hover {
-                    background: rgba(102,126,234,0.15);
-                    color: #8B9FEE;
-                    transform: translateY(-1px);
-                }
-                .toolbar-btn:active {
-                    background: rgba(102,126,234,0.25);
-                    color: #667EEA;
-                    transform: translateY(0);
-                }
-                .active-btn {
-                    background: rgba(102,126,234,0.18) !important;
-                    border-color: rgba(102,126,234,0.5) !important;
-                    color: #8B9FEE !important;
-                }
-                .editor-container {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 16px;
-                    height: calc(100vh - 350px);
-                    min-height: 600px;
-                }
-                .editor-panel, .preview-panel {
-                    background: var(--bg-secondary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 16px;
-                    overflow: hidden;
-                    display: flex;
-                    flex-direction: column;
-                    box-shadow: var(--shadow-sm);
-                    transition: box-shadow 0.2s;
-                }
-                .editor-panel:focus-within {
-                    box-shadow: 0 0 0 2px rgba(102,126,234,0.22), var(--shadow-sm);
-                }
-                .panel-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px 16px;
-                    background: var(--bg-tertiary);
-                    border-bottom: 1px solid var(--border-color);
-                    min-height: 48px;
-                }
-                .panel-header h2 {
-                    font-size: 0.9rem;
-                    font-weight: 700;
-                    color: var(--text-primary);
-                    letter-spacing: 0.01em;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    margin: 0;
-                }
-                .markdown-textarea {
-                    flex: 1;
-                    padding: 16px;
-                    background: var(--bg-primary);
-                    border: none;
-                    color: var(--text-primary);
-                    font-family: var(--font-mono);
-                    font-size: 0.9rem;
-                    line-height: 1.7;
-                    resize: none;
-                    outline: none;
-                    transition: background 0.3s;
-                }
-                .markdown-textarea::placeholder {
-                    color: var(--text-tertiary);
-                    opacity: 0.6;
-                }
-                .template-dropdown {
-                    position: absolute;
-                    top: calc(100% + 6px);
-                    left: 0;
-                    z-index: 1000;
-                    background: var(--bg-secondary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 12px;
-                    box-shadow: var(--shadow-lg);
-                    min-width: 210px;
-                    overflow: hidden;
-                    animation: dropdownIn 0.18s cubic-bezier(0.16,1,0.3,1);
-                }
-                @keyframes dropdownIn {
-                    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
-                    to   { opacity: 1; transform: translateY(0) scale(1); }
-                }
-                .template-item {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    width: 100%;
-                    padding: 10px 14px;
-                    background: transparent;
-                    border: none;
-                    color: var(--text-primary);
-                    font-family: var(--font-primary);
-                    font-size: 0.875rem;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: background 0.15s;
-                    text-align: left;
-                    border-bottom: 1px solid var(--border-color);
-                }
-                .template-item:last-child { border-bottom: none; }
-                .template-item:hover { background: rgba(102,126,234,0.1); color: #8B9FEE; }
-                .template-icon { font-size: 1.1rem; }
-                .find-replace-panel {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 6px;
-                    padding: 8px 12px;
-                    background: var(--bg-tertiary);
-                    border-bottom: 1px solid var(--border-color);
-                    animation: slideDown 0.18s ease;
-                }
-                @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-6px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
-                .find-row {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    color: var(--text-tertiary);
-                }
-                .find-input {
-                    flex: 1;
-                    padding: 6px 10px;
-                    background: var(--bg-primary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    color: var(--text-primary);
-                    font-family: var(--font-mono);
-                    font-size: 0.82rem;
-                    outline: none;
-                    transition: border-color 0.15s;
-                }
-                .find-input:focus { border-color: var(--primary-color); }
-                .match-count {
-                    font-size: 0.72rem;
-                    color: var(--text-tertiary);
-                    white-space: nowrap;
-                    font-family: var(--font-mono);
-                    background: var(--bg-primary);
-                    padding: 2px 8px;
-                    border-radius: 6px;
-                    border: 1px solid var(--border-color);
-                }
-                .find-replace-btn { padding: 5px 12px !important; font-size: 0.8rem !important; white-space: nowrap; height: auto !important; }
-                .find-close { flex-shrink: 0; }
-                .editor-drop-zone {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    position: relative;
-                    overflow: hidden;
-                }
-                .editor-drop-zone.dragging .markdown-textarea { opacity: 0.2; pointer-events: none; }
-                .drop-overlay {
-                    position: absolute;
-                    inset: 0;
-                    z-index: 10;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 14px;
-                    background: rgba(102,126,234,0.07);
-                    border: 2px dashed rgba(102,126,234,0.6);
-                    color: #8B9FEE;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    pointer-events: none;
-                    animation: pulseIn 0.2s ease;
-                }
-                @keyframes pulseIn { from { opacity: 0; } to { opacity: 1; } }
-                .preview-controls {
-                    display: flex;
-                    align-items: center;
-                    gap: 4px;
-                    background: var(--bg-primary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    padding: 3px;
-                }
-                .zoom-label {
-                    font-size: 0.72rem;
-                    color: var(--text-tertiary);
-                    font-family: var(--font-mono);
-                    min-width: 34px;
-                    text-align: center;
-                }
-                .preview-wrapper {
-                    flex: 1;
-                    overflow-y: auto;
-                    background: #525252;
-                    padding: 24px;
-                }
-                .preview-page {
-                    margin: 0 auto;
-                    background: #ffffff;
-                    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-                    position: relative;
-                    box-sizing: border-box;
-                    max-width: 100%;
-                    /* Use min-height not height — lets short content collapse naturally */
-                    min-height: unset !important;
-                }
-                .preview-header, .preview-footer {
-                    position: absolute;
-                    left: 20mm;
-                    right: 20mm;
-                    color: #888;
-                    font-size: 8pt;
-                    background: transparent;
-                }
-                .preview-header { top: 10mm; }
-                .preview-footer { bottom: 10mm; display: flex; justify-content: center; }
-                .preview-footer.split { justify-content: space-between; }
-                .pdf-preview {
-                    padding: 0;
-                    background: #ffffff;
-                    font-size: var(--preview-base-size, 10pt);
-                    line-height: 1.5;
-                    color: #2c2c2c;
-                    box-sizing: border-box;
-                }
-                .pdf-preview h1 { font-size: calc(var(--preview-base-size, 10pt) + 8pt); font-weight: 700; color: #1a1a1a; margin: 0 0 6pt 0; padding-bottom: 2pt; border-bottom: 0.5pt solid #ccc; line-height: 1.3; }
-                .pdf-preview h2 { font-size: calc(var(--preview-base-size, 10pt) + 4pt); font-weight: 600; color: #1a1a1a; margin: 10pt 0 5pt 0; padding-bottom: 2pt; border-bottom: 0.5pt solid #e0e0e0; line-height: 1.3; }
-                .pdf-preview h3 { font-size: calc(var(--preview-base-size, 10pt) + 2pt); font-weight: 600; color: #2c2c2c; margin: 8pt 0 4pt 0; line-height: 1.3; }
-                .pdf-preview h4 { font-size: calc(var(--preview-base-size, 10pt) + 1pt); font-weight: 600; color: #2c2c2c; margin: 6pt 0 3pt 0; }
-                .pdf-preview p { margin: 0 0 6pt 0; color: #2c2c2c; line-height: 1.5; }
-                .pdf-preview strong { font-weight: 700; color: #1a1a1a; }
-                .pdf-preview em { font-style: italic; }
-                .pdf-preview a { color: #0066cc; text-decoration: underline; }
-                .pdf-preview ul, .pdf-preview ol { margin: 0 0 6pt 0; padding-left: 18pt; }
-                .pdf-preview li { margin-bottom: 2pt; color: #2c2c2c; line-height: 1.5; }
-                .pdf-preview pre { background-color: #f5f5f5 !important; border: 0.5pt solid #d0d0d0; border-left: 2.5pt solid #555; border-radius: 3px; padding: 8pt 10pt; margin: 6pt 0 8pt 0; font-family: 'Courier New', Courier, monospace; font-size: 8.5pt; line-height: 1.45; overflow-x: auto; }
-                .pdf-preview code { font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0 !important; color: #c7254e !important; padding: 1pt 3pt; border-radius: 2px; font-size: 9pt; }
-                .pdf-preview pre code { background: transparent !important; padding: 0; color: #1a1a1a !important; }
-                /* ── TABLE FIX: force all cells to white bg & dark text, never inherit theme ── */
-                .pdf-preview table { width: 100%; border-collapse: collapse; margin: 8pt 0 10pt 0; font-size: 9.5pt; table-layout: fixed; }
-                .pdf-preview thead { background-color: var(--table-header-bg, #f0f0f0) !important; }
-                .pdf-preview th { 
-                    background-color: var(--table-header-bg, #f0f0f0) !important; 
-                    color: var(--table-header-text, #1a1a1a) !important; 
-                    font-weight: 700; 
-                    padding: 5pt 8pt; 
-                    border: 0.75pt solid var(--table-header-border, #c8c8c8) !important; 
-                    text-align: left; 
-                    line-height: 1.4; 
-                    word-wrap: break-word;
-                }
-                .pdf-preview td { 
-                    background-color: var(--table-row-odd-bg, #ffffff) !important; 
-                    color: var(--table-row-text, #2c2c2c) !important; 
-                    padding: 5pt 8pt; 
-                    border: 0.5pt solid var(--table-row-border, #d8d8d8) !important; 
-                    line-height: 1.4; 
-                    vertical-align: top;
-                    word-wrap: break-word;
-                }
-                .pdf-preview tbody tr:nth-child(even) td { background-color: var(--table-row-even-bg, #f8f8f8) !important; }
-                .pdf-preview tbody tr:hover td { background-color: #f0f4ff !important; }
-                .pdf-preview blockquote { border-left: 2.5pt solid #888; background-color: #f9f9f9 !important; color: #444 !important; padding: 8pt 12pt; margin: 8pt 0; font-style: italic; }
-                .pdf-preview img { max-width: 100%; height: auto; margin: 10pt auto; display: block; }
-                .pdf-preview hr { border: none; border-top: 0.5pt solid #ccc; margin: 14pt 0; }
-                .pdf-preview .mermaid-diagram, .pdf-preview .mermaid-rendered { margin: 10pt 0; padding: 10pt; text-align: center; background-color: #fafafa !important; border: 0.5pt solid #e0e0e0; }
-                .spinner { animation: spin 1s linear infinite; }
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                @media (max-width: 1024px) {
-                    .editor-container { grid-template-columns: 1fr; height: auto; min-height: 1000px; }
-                    .preview-page { width: 100% !important; height: auto !important; }
-                    .preview-header, .preview-footer { position: relative; left: 0; right: 0; padding: 0 1.5rem; }
-                    .preview-header { padding-top: 1rem; }
-                    .preview-footer { padding-bottom: 1rem; }
-                }
-            `}</style>
+            {/* All layout styles moved to globals.css for SSR-safe rendering */}
         </section>
     );
 }

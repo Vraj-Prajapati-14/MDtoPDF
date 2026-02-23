@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Sun, Moon, FileText } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function Header() {
@@ -20,17 +21,14 @@ export default function Header() {
         <header className="header" role="banner">
             <nav className="nav-container" role="navigation" aria-label="Main navigation">
                 <Link href="/" className="logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
-                        <path d="M8 12L16 20L24 12" stroke="white" strokeWidth="2.5" strokeLinecap="round"
-                            strokeLinejoin="round" />
-                        <defs>
-                            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#667EEA" />
-                                <stop offset="1" stopColor="#764BA2" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                    <Image
+                        src="/logo.png"
+                        alt="MarkdownPDF Logo"
+                        width={96}
+                        height={72}
+                        className="logo-img"
+                        priority
+                    />
                     <span className="logo-text">MarkdownPDF</span>
                 </Link>
 
