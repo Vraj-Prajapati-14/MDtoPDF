@@ -131,15 +131,15 @@ h6 {
 }
 
 h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
 }
 
 h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
 }
 
 h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
 }
 
 p {
@@ -1706,10 +1706,80 @@ a:hover {
 .pdf-preview .mermaid-diagram,
 .pdf-preview .mermaid-rendered {
   margin: 10pt 0;
-  padding: 10pt;
+  padding: 0;
   text-align: center;
   background-color: #fafafa !important;
   border: 0.5pt solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Mermaid wrapper (new) */
+.mermaid-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.mermaid-svg-container {
+  width: 100%;
+  padding: 16px 12px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.mermaid-svg-container svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Action bar below diagram */
+.mermaid-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid #eaeaea;
+  background: #f8f8f8;
+  width: 100%;
+  justify-content: flex-end;
+  box-sizing: border-box;
+}
+
+.mermaid-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-primary);
+  white-space: nowrap;
+}
+
+.mermaid-action-btn:hover {
+  background: #667EEA;
+  border-color: #667EEA;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.mermaid-action-btn:active {
+  transform: translateY(0);
 }
 
 .spinner {

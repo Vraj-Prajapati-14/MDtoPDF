@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { marked } from 'marked';
@@ -157,19 +157,100 @@ export default function Converter() {
         const diagrams = previewRef.current.querySelectorAll('.mermaid-diagram');
         for (let i = 0; i < diagrams.length; i++) {
             const diagram = diagrams[i] as HTMLElement;
+            if (diagram.classList.contains('mermaid-rendered')) continue;
             const code = diagram.textContent || '';
             const id = diagram.id;
 
             try {
                 const { svg } = await mermaid.render(`mermaid-svg-${id}`, code);
-                diagram.innerHTML = svg;
+
+                // Helper: SVG element -> PNG data URL
+                const svgToPng = (svgEl: SVGElement, scale = 3): Promise<string> =>
+                    new Promise((resolve, reject) => {
+                        const bbox = svgEl.getBoundingClientRect();
+                        const w = Math.max(bbox.width, 200);
+                        const h = Math.max(bbox.height, 100);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w * scale;
+                        canvas.height = h * scale;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) return reject('no ctx');
+                        ctx.scale(scale, scale);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, w, h);
+                        const blob = new Blob([new XMLSerializer().serializeToString(svgEl)], { type: 'image/svg+xml;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const img = new Image();
+                        img.onload = () => { ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url); resolve(canvas.toDataURL('image/png')); };
+                        img.onerror = () => { URL.revokeObjectURL(url); reject('img load error'); };
+                        img.src = url;
+                    });
+
+                // Build wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mermaid-wrapper';
+
+                const svgContainer = document.createElement('div');
+                svgContainer.className = 'mermaid-svg-container';
+                svgContainer.innerHTML = svg;
+
+                // Action bar
+                const actions = document.createElement('div');
+                actions.className = 'mermaid-actions';
+
+                // Save as PNG
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'mermaid-action-btn';
+                saveBtn.textContent = '⬇ Save PNG';
+                saveBtn.title = 'Download diagram as PNG';
+                saveBtn.onclick = async () => {
+                    try {
+                        const svgEl = svgContainer.querySelector('svg') as SVGElement | null;
+                        if (!svgEl) return;
+                        const dataUrl = await svgToPng(svgEl, 3);
+                        const a = document.createElement('a');
+                        a.download = `mermaid-diagram-${i + 1}.png`;
+                        a.href = dataUrl;
+                        a.click();
+                    } catch (e) { console.error('Save PNG error:', e); }
+                };
+
+                // Copy image
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'mermaid-action-btn';
+                copyBtn.textContent = '⧉ Copy';
+                copyBtn.title = 'Copy diagram to clipboard as PNG';
+                copyBtn.onclick = async () => {
+                    try {
+                        const svgEl = svgContainer.querySelector('svg') as SVGElement | null;
+                        if (!svgEl) return;
+                        const dataUrl = await svgToPng(svgEl, 2);
+                        const res = await fetch(dataUrl);
+                        const blob = await res.blob();
+                        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                        copyBtn.textContent = '✓ Copied!';
+                        setTimeout(() => { copyBtn.textContent = '⧉ Copy'; }, 2000);
+                    } catch (e) {
+                        copyBtn.textContent = '✗ Failed';
+                        setTimeout(() => { copyBtn.textContent = '⧉ Copy'; }, 2000);
+                    }
+                };
+
+                actions.appendChild(saveBtn);
+                actions.appendChild(copyBtn);
+                wrapper.appendChild(svgContainer);
+                wrapper.appendChild(actions);
+
+                diagram.innerHTML = '';
+                diagram.appendChild(wrapper);
                 diagram.classList.add('mermaid-rendered');
             } catch (error) {
                 console.error('Mermaid rendering error:', error);
-                diagram.innerHTML = '<pre style="color: red;">Error rendering diagram</pre>';
+                diagram.innerHTML = '<pre style="color:#e53e3e;padding:10px;background:#fff5f5;border-left:3px solid #e53e3e;border-radius:4px;">⚠ Error rendering diagram — check your Mermaid syntax.</pre>';
             }
         }
     };
+
 
     useEffect(() => {
         const saved = localStorage.getItem('markdownContent');
@@ -357,27 +438,27 @@ Ready to start? Edit this text or upload your own file.`);
     const TEMPLATES: { label: string; icon: string; content: string }[] = [
         {
             label: 'Technical Report',
-            icon: 'ðŸ“„',
+            icon: '📄',
             content: `# Technical Report\n\n**Author:** Your Name  \n**Date:** ${new Date().toLocaleDateString()}  \n**Version:** 1.0\n\n---\n\n## Executive Summary\n\nA brief overview of the report's purpose and key findings.\n\n## Introduction\n\nBackground information and context for the report.\n\n## Methodology\n\nDescribe the methods used to gather data and conduct analysis.\n\n## Results\n\n| Metric | Value | Notes |\n| --- | --- | --- |\n| Item 1 | â€” | â€” |\n| Item 2 | â€” | â€” |\n\n## Conclusion\n\nSummarize the findings and recommendations.\n\n## References\n\n1. Reference one\n2. Reference two\n`
         },
         {
             label: 'Meeting Notes',
-            icon: 'ðŸ“',
+            icon: '📝',
             content: `# Meeting Notes\n\n**Date:** ${new Date().toLocaleDateString()}  \n**Attendees:** Name 1, Name 2  \n**Facilitator:** Name\n\n---\n\n## Agenda\n\n1. Topic One\n2. Topic Two\n3. Action Items\n\n## Discussion\n\n### Topic One\n\nKey points discussed...\n\n### Topic Two\n\nKey points discussed...\n\n## Action Items\n\n| # | Task | Owner | Due Date |\n| --- | --- | --- | --- |\n| 1 | Task description | Owner | Date |\n| 2 | Task description | Owner | Date |\n\n## Next Meeting\n\n**Date:** TBD  \n**Location:** TBD\n`
         },
         {
             label: 'README',
-            icon: 'ðŸ“¦',
+            icon: '📦',
             content: `# Project Name\n\n> A short description of what this project does.\n\n![License](https://img.shields.io/badge/license-MIT-blue)\n\n## Features\n\n- âœ… Feature one\n- âœ… Feature two\n- âœ… Feature three\n\n## Installation\n\n\`\`\`bash\nnpm install your-package\n\`\`\`\n\n## Usage\n\n\`\`\`javascript\nconst pkg = require('your-package');\npkg.doSomething();\n\`\`\`\n\n## Contributing\n\nPull requests are welcome. For major changes, please open an issue first.\n\n## License\n\n[MIT](LICENSE)\n`
         },
         {
             label: 'Research Paper',
-            icon: 'ðŸ”¬',
+            icon: '🔬',
             content: `# Research Paper Title\n\n**Abstract:** A concise summary of the research, including the problem, methodology, results, and conclusion.\n\n---\n\n## 1. Introduction\n\nContext and motivation for the research.\n\n## 2. Literature Review\n\nReview of existing work in the field.\n\n## 3. Methodology\n\nDetailed description of the research approach.\n\n## 4. Results\n\nPresentation of findings with data and analysis.\n\n## 5. Discussion\n\nInterpretation of results and implications.\n\n## 6. Conclusion\n\nSummary of findings and future directions.\n\n## References\n\n- Author, A. (Year). *Title*. Publisher.\n- Author, B. (Year). *Title*. Journal, Vol(No), pp.\n`
         },
         {
             label: 'Project Proposal',
-            icon: 'ðŸš€',
+            icon: '🚀',
             content: `# Project Proposal: [Project Title]\n\n**Prepared by:** Your Name  \n**Date:** ${new Date().toLocaleDateString()}\n\n---\n\n## Problem Statement\n\nDescribe the problem this project aims to solve.\n\n## Proposed Solution\n\nOutline the proposed approach and solution.\n\n## Scope\n\n- **In scope:** What will be done\n- **Out of scope:** What will not be done\n\n## Timeline\n\n| Phase | Description | Duration |\n| --- | --- | --- |\n| Phase 1 | Planning | 2 weeks |\n| Phase 2 | Development | 4 weeks |\n| Phase 3 | Testing | 1 week |\n\n## Budget\n\n| Item | Cost |\n| --- | --- |\n| Item 1 | $0 |\n| Total | $0 |\n\n## Success Criteria\n\n1. Criterion one\n2. Criterion two\n`
         }
     ];
@@ -794,8 +875,8 @@ Ready to start? Edit this text or upload your own file.`);
 
             const renderHeading = async (token: any) => {
                 const level = token.depth || 1;
-                const sizeMap = [baseFontSize + 8, baseFontSize + 4, baseFontSize + 2, baseFontSize + 1, baseFontSize, baseFontSize - 1];
-                const fontSize = Math.max(9, sizeMap[level - 1] || baseFontSize);
+                const sizeMap = [baseFontSize + 6, baseFontSize + 3.5, baseFontSize + 2, baseFontSize + 1, baseFontSize, baseFontSize - 0.5];
+                const fontSize = Math.max(8.5, sizeMap[level - 1] || baseFontSize);
                 const spacing = fontSize * 0.6;
                 checkPageBreak(fontSize + spacing);
                 await drawWrappedText(token.text || '', { font: fontFamily, style: 'bold', size: fontSize, color: [26, 26, 26] });
@@ -845,11 +926,22 @@ Ready to start? Edit this text or upload your own file.`);
 
                 const availableHeight = pageHeight - margin.bottom - currentY - 6;
                 if (renderHeight > availableHeight) {
-                    if (renderHeight > availableHeight * 1.5) {
+                    // If the diagram is relatively small (less than 1/3 of the page) or 
+                    // if it's only slightly larger than the available space, scale it down.
+                    // Otherwise, move it to the next page to maintain readability.
+                    const isSmallDiagram = renderHeight < (pageHeight / 3);
+                    const threshold = isSmallDiagram ? 2.5 : 1.8;
+                    
+                    if (renderHeight > availableHeight * threshold) {
                         checkPageBreak(renderHeight + 6);
                     } else {
-                        renderHeight = availableHeight;
+                        renderHeight = Math.max(availableHeight, 15); // Don't scale below 15mm
                         renderWidth = renderHeight / aspectRatio;
+                        // Center it again after scaling
+                        if (renderWidth > maxDiagramWidth) {
+                            renderWidth = maxDiagramWidth;
+                            renderHeight = renderWidth * aspectRatio;
+                        }
                     }
                 }
 
