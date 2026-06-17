@@ -48,7 +48,41 @@ const TABLE_THEMES = {
     }
 };
 
+// Codepoint-to-replacement map for non-Latin-1 chars jsPDF cannot render.
+// All values are ASCII; built from numeric codepoints to avoid encoding issues.
+const _PDF_CHAR_MAP: Record<number, string> = (() => {
+    const m: Record<number, string> = {};
+    // Box-drawing horizontal lines (U+2500-U+257A range) -> '-'
+    for (const cp of [0x2500,0x2501,0x2504,0x2505,0x2508,0x2509,0x254C,0x254D,0x2574,0x2576,0x2578,0x257A]) m[cp] = '-';
+    // Double horizontal (U+2550) -> '='
+    m[0x2550] = '=';
+    // Box-drawing vertical lines (U+2502-U+257B range) -> '|'
+    for (const cp of [0x2502,0x2503,0x2506,0x2507,0x250A,0x250B,0x254E,0x254F,0x2551,0x2575,0x2577,0x2579,0x257B]) m[cp] = '|';
+    // Remaining box-drawing block (U+2500-U+257F): corners and junctions -> '+'
+    for (let cp = 0x2500; cp <= 0x257F; cp++) if (!m[cp]) m[cp] = '+';
+    // Arrows: rupee, right-arrow, left-arrow, up-arrow, down-arrow
+    m[0x20B9] = 'Rs.'; m[0x2192] = '->'; m[0x2190] = '<-'; m[0x2191] = '^'; m[0x2193] = 'v';
+    // Checkmarks and crosses
+    m[0x2713] = '[/]'; m[0x2714] = '[/]'; m[0x2611] = '[/]';
+    m[0x2717] = '[x]'; m[0x2718] = '[x]';
+    // Typographic single/double quotes -> straight ASCII
+    m[0x2018] = "'"; m[0x2019] = "'"; m[0x201C] = '"'; m[0x201D] = '"';
+    // En dash, em dash, ellipsis
+    m[0x2013] = '-'; m[0x2014] = '--'; m[0x2026] = '...';
+    return m;
+})();
 
+const sanitizeForPdf = (text: string): string =>
+    [...text].map(ch => {
+        const cp = ch.codePointAt(0) as number;
+        return cp <= 0xFF ? ch : (_PDF_CHAR_MAP[cp] ?? '');
+    }).join('');
+
+// Matches box-drawing (U+2500-U+257F) or arrows (U+2190-U+21FF) at runtime
+const _DIAGRAM_RE = (function() {
+    const s = String.fromCharCode;
+    return new RegExp("[" + s(0x2500) + "-" + s(0x257F) + s(0x2190) + "-" + s(0x21FF) + "]");
+})();
 if (typeof window !== 'undefined') {
     import('jspdf').then(module => { jsPDF = module.jsPDF; });
     import('html2canvas').then(module => { html2canvas = module.default; });
@@ -764,13 +798,14 @@ Ready to start? Edit this text or upload your own file.`);
                     const parts = segment.value.split(/(\s+)/);
                     parts.forEach((part) => {
                         if (!part) return;
-                        const partWidth = pdf.getTextWidth(part);
+                        const safePart = sanitizeForPdf(part);
+                        const partWidth = pdf.getTextWidth(safePart);
                         if (currentX + partWidth > xStart + maxWidth) {
                             ensureLineSpace(lineHeight);
                             currentY += lineHeight;
                             currentX = xStart;
                         }
-                        pdf.text(part, currentX, currentY);
+                        pdf.text(safePart, currentX, currentY);
                         currentX += partWidth;
                     });
                 }
@@ -825,13 +860,14 @@ Ready to start? Edit this text or upload your own file.`);
                         const parts = segment.value.split(/(\s+)/);
                         parts.forEach((part) => {
                             if (!part) return;
-                            const partWidth = pdf.getTextWidth(part);
+                            const safePart = sanitizeForPdf(part);
+                            const partWidth = pdf.getTextWidth(safePart);
                             if (currentX + partWidth > xStart + maxWidth) {
                                 ensureLineSpace(lineHeight);
                                 currentY += lineHeight;
                                 currentX = xStart;
                             }
-                            pdf.text(part, currentX, currentY);
+                            pdf.text(safePart, currentX, currentY);
                             currentX += partWidth;
                         });
                     }
@@ -863,12 +899,50 @@ Ready to start? Edit this text or upload your own file.`);
             };
 
             const renderParagraph = async (token: any) => {
+                const rawText = token.text || '';
+                // Paragraphs containing box-drawing or arrow chars are ASCII-art diagrams
+                if (_DIAGRAM_RE.test(rawText)) {
+                    let rendered = false;
+                    const el = document.createElement('div');
+                    el.style.cssText = [
+                        'position:fixed',
+                        'left:-9999px',
+                        'top:0',
+                        'background:#f5f5f5',
+                        'padding:10px 14px',
+                        'font-family:"Courier New",Courier,monospace',
+                        'font-size:11.5px',
+                        'line-height:1.5',
+                        'white-space:pre',
+                        'width:780px',
+                        'color:#1a1a1a',
+                        'border-left:3px solid #666666',
+                        'box-sizing:border-box',
+                    ].join(';');
+                    el.textContent = rawText;
+                    document.body.appendChild(el);
+                    try {
+                        const canvas = await html2canvas(el, { scale: 2, logging: false, backgroundColor: '#f5f5f5' });
+                        const imgData = canvas.toDataURL('image/png');
+                        const imgWidth = contentWidth;
+                        const imgHeight = (canvas.height / canvas.width) * imgWidth;
+                        checkPageBreak(imgHeight + 5);
+                        pdf.addImage(imgData, 'PNG', margin.left, currentY - 2, imgWidth, imgHeight);
+                        currentY += imgHeight + 5;
+                        rendered = true;
+                    } catch {
+                        // fall through to normal paragraph rendering
+                    } finally {
+                        document.body.removeChild(el);
+                    }
+                    if (rendered) return;
+                }
                 ensureLineSpace(baseLineHeight);
                 const inlineTokens = token.tokens || [];
                 if (inlineTokens.length) {
                     await renderInlineTokens(inlineTokens);
                 } else {
-                    await drawWrappedText(token.text || '', { font: fontFamily, style: 'normal', size: baseFontSize, color: [44, 44, 44] });
+                    await drawWrappedText(rawText, { font: fontFamily, style: 'normal', size: baseFontSize, color: [44, 44, 44] });
                     currentY += baseLineHeight * 0.6;
                 }
             };
@@ -877,32 +951,89 @@ Ready to start? Edit this text or upload your own file.`);
                 const level = token.depth || 1;
                 const sizeMap = [baseFontSize + 6, baseFontSize + 3.5, baseFontSize + 2, baseFontSize + 1, baseFontSize, baseFontSize - 0.5];
                 const fontSize = Math.max(8.5, sizeMap[level - 1] || baseFontSize);
-                const spacing = fontSize * 0.6;
-                checkPageBreak(fontSize + spacing);
+                checkPageBreak(fontSize * 1.2);
                 await drawWrappedText(token.text || '', { font: fontFamily, style: 'bold', size: fontSize, color: [26, 26, 26] });
-                // Only h1 (document title) gets an underline â€” h2 underlines near page-bottom
-                // would stack on top of the footer separator and create a double-line artifact.
+                // drawWrappedText always adds fontSize*0.53 trailing; pull that back so
+                // headings don't accumulate huge gaps — then add a tighter explicit bottom.
+                currentY -= fontSize * 0.3;
                 if (level === 1) {
                     pdf.setDrawColor(204, 204, 204);
                     pdf.setLineWidth(0.2);
                     pdf.line(margin.left, currentY + 1, pageWidth - margin.right, currentY + 1);
                 }
-                currentY += spacing;
+                currentY += level <= 2 ? baseLineHeight * 0.65 : baseLineHeight * 0.45;
             };
 
-            const renderCodeBlock = (token: any) => {
+            const renderCodeBlock = async (token: any) => {
                 const code = token.text || '';
-                const lines = code.split('\n');
-                const lineHeight = (baseFontSize - 1) * 0.55;
+
+                // Code blocks with Unicode (box-drawing, arrows, etc.) are rendered
+                // as images so the browser's monospace font handles all glyphs natively
+                if (/[^\x00-\xFF]/.test(code)) {
+                    let rendered = false;
+                    const el = document.createElement('div');
+                    el.style.cssText = [
+                        'position:fixed',
+                        'left:-9999px',
+                        'top:0',
+                        'background:#f5f5f5',
+                        'padding:10px 14px',
+                        'font-family:"Courier New",Courier,monospace',
+                        'font-size:11.5px',
+                        'line-height:1.5',
+                        'white-space:pre',
+                        'width:780px',
+                        'color:#1a1a1a',
+                        'border-left:3px solid #666666',
+                        'box-sizing:border-box',
+                    ].join(';');
+                    el.textContent = code;
+                    document.body.appendChild(el);
+                    try {
+                        const canvas = await html2canvas(el, { scale: 2, logging: false, backgroundColor: '#f5f5f5' });
+                        const imgData = canvas.toDataURL('image/png');
+                        const imgWidth = contentWidth;
+                        const imgHeight = (canvas.height / canvas.width) * imgWidth;
+                        checkPageBreak(imgHeight + 5);
+                        pdf.addImage(imgData, 'PNG', margin.left, currentY - 2, imgWidth, imgHeight);
+                        currentY += imgHeight + 5;
+                        rendered = true;
+                    } catch {
+                        // fall through to ASCII text rendering below
+                    } finally {
+                        document.body.removeChild(el);
+                    }
+                    if (rendered) return;
+                    // html2canvas failed — continue to text path with ASCII sanitization
+                }
+
+                const rawLines = code.split('\n');
+                const lines = rawLines.map((l: string) => sanitizeForPdf(l));
+
+                // Auto-scale font so the widest line fits within the content area
+                let codeFontSize = Math.max(4.5, baseFontSize - 1);
+                pdf.setFont('courier', 'normal');
+                pdf.setFontSize(codeFontSize);
+                const availableCodeWidth = contentWidth - 10;
+                const maxLineW = lines.reduce((max: number, l: string) => {
+                    const w = l.length > 0 ? pdf.getTextWidth(l) : 0;
+                    return w > max ? w : max;
+                }, 0);
+                if (maxLineW > availableCodeWidth && maxLineW > 0) {
+                    codeFontSize = Math.max(4.5, codeFontSize * (availableCodeWidth / maxLineW));
+                    pdf.setFontSize(codeFontSize);
+                }
+
+                const lineHeight = codeFontSize * 0.55;
                 const blockHeight = lines.length * lineHeight + 8;
-                checkPageBreak(blockHeight);
+                checkPageBreak(Math.min(blockHeight, pageHeight - margin.top - margin.bottom - 10));
                 pdf.setFillColor(245, 245, 245);
                 pdf.rect(margin.left, currentY - 2, contentWidth, blockHeight, 'F');
                 pdf.setDrawColor(102, 102, 102);
                 pdf.setLineWidth(1);
                 pdf.line(margin.left, currentY - 2, margin.left, currentY + blockHeight - 2);
                 pdf.setFont('courier', 'normal');
-                pdf.setFontSize(baseFontSize - 1);
+                pdf.setFontSize(codeFontSize);
                 pdf.setTextColor(26, 26, 26);
                 lines.forEach((line: string, idx: number) => {
                     pdf.text(line, margin.left + 5, currentY + (idx * lineHeight) + 3);
@@ -1002,10 +1133,16 @@ Ready to start? Edit this text or upload your own file.`);
                 // Extract text from token objects (marked v4+ returns objects with .text)
                 const extractCellText = (cell: any): string => {
                     if (typeof cell === 'string') return cell;
-                    if (cell && typeof cell.text === 'string') return cell.text;
-                    if (cell && cell.tokens) {
-                        return cell.tokens.map((t: any) => t.text || t.raw || '').join('');
+                    // Prefer tokens — marked v4+ stores raw markdown in cell.text ("**bold**")
+                    // but the parsed inline tokens contain clean text
+                    if (cell && cell.tokens && cell.tokens.length > 0) {
+                        const fromToks = (toks: any[]): string =>
+                            toks.map((t: any) =>
+                                t.tokens && t.tokens.length > 0 ? fromToks(t.tokens) : (t.text || t.raw || '')
+                            ).join('');
+                        return fromToks(cell.tokens);
                     }
+                    if (cell && typeof cell.text === 'string') return cell.text;
                     return String(cell ?? '');
                 };
 
@@ -1036,7 +1173,7 @@ Ready to start? Edit this text or upload your own file.`);
                     const rowHeight = measureRowHeight(row);
                     row.forEach((cell, colIndex) => {
                         const x = margin.left + colIndex * colWidth;
-                        const lines = pdf.splitTextToSize(cell || '', colWidth - 4);
+                        const lines = pdf.splitTextToSize(sanitizeForPdf(cell || ''), colWidth - 4);
                         // Re-apply fill + draw + text colors per cell to avoid jsPDF state bleed
                         pdf.setFillColor(style.fill[0], style.fill[1], style.fill[2]);
                         pdf.setDrawColor(style.border[0], style.border[1], style.border[2]);
@@ -1057,7 +1194,9 @@ Ready to start? Edit this text or upload your own file.`);
 
                 rows.forEach((row: string[], idx: number) => {
                     const rowHeight = measureRowHeight(row);
-                    checkPageBreak(rowHeight + 2);
+                    if (checkPageBreak(rowHeight + 2)) {
+                        rowY = currentY; // sync after page break to avoid blank pages
+                    }
                     const style = idx % 2 === 0 ? theme.rowOdd : theme.rowEven;
                     drawRow(row, rowY, style, false);
                     rowY += rowHeight;
@@ -1075,7 +1214,7 @@ Ready to start? Edit this text or upload your own file.`);
             for (const token of tokens) {
                 if (token.type === 'space') {
                     if (!isFirstContent) {
-                        currentY += baseLineHeight;
+                        currentY += baseLineHeight * 0.55;
                     }
                     continue;
                 }
@@ -1096,7 +1235,7 @@ Ready to start? Edit this text or upload your own file.`);
                     if (token.lang === 'mermaid') {
                         await renderMermaidBlock(token);
                     } else {
-                        renderCodeBlock(token);
+                        await renderCodeBlock(token);
                     }
                     continue;
                 }
@@ -1115,7 +1254,7 @@ Ready to start? Edit this text or upload your own file.`);
                         pdf.setLineWidth(0.3);
                         pdf.line(margin.left, currentY, pageWidth - margin.right, currentY);
                     }
-                    currentY += baseLineHeight * 0.8;
+                    currentY += baseLineHeight * 0.55;
                     continue;
                 }
                 if (token.type === 'table') {
