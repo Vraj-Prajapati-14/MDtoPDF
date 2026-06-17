@@ -31,6 +31,11 @@ const FONT_LABELS: Record<string, string> = {
 };
 
 const TABLE_THEMES = {
+    professional: {
+        header: { fill: [30, 58, 95], text: [255, 255, 255], border: [30, 58, 95] },
+        rowEven: { fill: [235, 244, 252], text: [44, 44, 44], border: [184, 210, 235] },
+        rowOdd: { fill: [255, 255, 255], text: [44, 44, 44], border: [184, 210, 235] }
+    },
     light: {
         header: { fill: [240, 240, 240], text: [26, 26, 26], border: [204, 204, 204] },
         rowEven: { fill: [250, 250, 250], text: [44, 44, 44], border: [224, 224, 224] },
@@ -112,7 +117,7 @@ export default function Converter() {
     const [showPageNumbers, setShowPageNumbers] = useState(false);
     const [fontFamily, setFontFamily] = useState('helvetica');
     const [baseFontSize, setBaseFontSize] = useState(10);
-    const [tableTheme, setTableTheme] = useState<TableTheme>('light');
+    const [tableTheme, setTableTheme] = useState<TableTheme>('professional');
     const [customFilename, setCustomFilename] = useState('');
     const [isCopied, setIsCopied] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -708,11 +713,11 @@ Ready to start? Edit this text or upload your own file.`);
                 if (!shouldRenderHeader) return;
                 const headerY = 12;
                 pdf.setFontSize(8.5);
-                pdf.setTextColor(120, 120, 120);
-                pdf.setFont(fontFamily as any, 'normal');
+                pdf.setTextColor(30, 58, 95);
+                pdf.setFont(fontFamily as any, 'bold');
                 pdf.text(headerTextValue, margin.left, headerY);
-                pdf.setDrawColor(200, 200, 200);
-                pdf.setLineWidth(0.3);
+                pdf.setDrawColor(30, 58, 95);
+                pdf.setLineWidth(0.4);
                 pdf.line(margin.left, headerY + 3, pageWidth - margin.right, headerY + 3);
             };
 
@@ -941,9 +946,10 @@ Ready to start? Edit this text or upload your own file.`);
                 const inlineTokens = token.tokens || [];
                 if (inlineTokens.length) {
                     await renderInlineTokens(inlineTokens);
+                    currentY += baseLineHeight * 0.35; // extra paragraph gap (list items don't get this)
                 } else {
                     await drawWrappedText(rawText, { font: fontFamily, style: 'normal', size: baseFontSize, color: [44, 44, 44] });
-                    currentY += baseLineHeight * 0.6;
+                    currentY += baseLineHeight * 0.95;
                 }
             };
 
@@ -951,17 +957,26 @@ Ready to start? Edit this text or upload your own file.`);
                 const level = token.depth || 1;
                 const sizeMap = [baseFontSize + 6, baseFontSize + 3.5, baseFontSize + 2, baseFontSize + 1, baseFontSize, baseFontSize - 0.5];
                 const fontSize = Math.max(8.5, sizeMap[level - 1] || baseFontSize);
+                // H1/H2: deep navy, H3: medium blue, H4+: dark charcoal
+                const colorMap: number[][] = [
+                    [30, 58, 95], [30, 58, 95], [38, 101, 160], [60, 60, 60], [80, 80, 80], [100, 100, 100]
+                ];
+                const headingColor = colorMap[level - 1] || [44, 44, 44];
                 checkPageBreak(fontSize * 1.2);
-                await drawWrappedText(token.text || '', { font: fontFamily, style: 'bold', size: fontSize, color: [26, 26, 26] });
+                await drawWrappedText(token.text || '', { font: fontFamily, style: 'bold', size: fontSize, color: headingColor });
                 // drawWrappedText always adds fontSize*0.53 trailing; pull that back so
                 // headings don't accumulate huge gaps — then add a tighter explicit bottom.
                 currentY -= fontSize * 0.3;
                 if (level === 1) {
-                    pdf.setDrawColor(204, 204, 204);
-                    pdf.setLineWidth(0.2);
+                    pdf.setDrawColor(30, 58, 95);
+                    pdf.setLineWidth(0.5);
+                    pdf.line(margin.left, currentY + 1, pageWidth - margin.right, currentY + 1);
+                } else if (level === 2) {
+                    pdf.setDrawColor(184, 210, 235);
+                    pdf.setLineWidth(0.3);
                     pdf.line(margin.left, currentY + 1, pageWidth - margin.right, currentY + 1);
                 }
-                currentY += level <= 2 ? baseLineHeight * 0.8 : baseLineHeight * 0.6;
+                currentY += level <= 2 ? baseLineHeight * 1.2 : baseLineHeight * 0.85;
             };
 
             const renderCodeBlock = async (token: any) => {
@@ -1429,6 +1444,7 @@ Ready to start? Edit this text or upload your own file.`);
                             onChange={(e) => setTableTheme(e.target.value as TableTheme)}
                             className="select-input"
                         >
+                            <option value="professional">Professional</option>
                             <option value="light">Light</option>
                             <option value="striped">Striped</option>
                             <option value="minimal">Minimal</option>
