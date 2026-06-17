@@ -922,7 +922,7 @@ Ready to start? Edit this text or upload your own file.`);
                     el.textContent = rawText;
                     document.body.appendChild(el);
                     try {
-                        const canvas = await html2canvas(el, { scale: 2, logging: false, backgroundColor: '#f5f5f5' });
+                        const canvas = await html2canvas(el, { scale: 1.5, logging: false, backgroundColor: '#f5f5f5' });
                         const imgData = canvas.toDataURL('image/png');
                         const imgWidth = contentWidth;
                         const imgHeight = (canvas.height / canvas.width) * imgWidth;
@@ -961,7 +961,7 @@ Ready to start? Edit this text or upload your own file.`);
                     pdf.setLineWidth(0.2);
                     pdf.line(margin.left, currentY + 1, pageWidth - margin.right, currentY + 1);
                 }
-                currentY += level <= 2 ? baseLineHeight * 0.65 : baseLineHeight * 0.45;
+                currentY += level <= 2 ? baseLineHeight * 0.8 : baseLineHeight * 0.6;
             };
 
             const renderCodeBlock = async (token: any) => {
@@ -990,7 +990,7 @@ Ready to start? Edit this text or upload your own file.`);
                     el.textContent = code;
                     document.body.appendChild(el);
                     try {
-                        const canvas = await html2canvas(el, { scale: 2, logging: false, backgroundColor: '#f5f5f5' });
+                        const canvas = await html2canvas(el, { scale: 1.5, logging: false, backgroundColor: '#f5f5f5' });
                         const imgData = canvas.toDataURL('image/png');
                         const imgWidth = contentWidth;
                         const imgHeight = (canvas.height / canvas.width) * imgWidth;
@@ -1214,7 +1214,7 @@ Ready to start? Edit this text or upload your own file.`);
             for (const token of tokens) {
                 if (token.type === 'space') {
                     if (!isFirstContent) {
-                        currentY += baseLineHeight * 0.55;
+                        currentY += baseLineHeight * 0.75;
                     }
                     continue;
                 }
@@ -1254,7 +1254,7 @@ Ready to start? Edit this text or upload your own file.`);
                         pdf.setLineWidth(0.3);
                         pdf.line(margin.left, currentY, pageWidth - margin.right, currentY);
                     }
-                    currentY += baseLineHeight * 0.55;
+                    currentY += baseLineHeight * 0.7;
                     continue;
                 }
                 if (token.type === 'table') {
